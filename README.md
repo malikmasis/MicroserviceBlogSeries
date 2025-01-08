@@ -22,7 +22,7 @@ Mikroservis konusu ile ilgili kendi adıma diyebileceğim en net şey, gerçekte
 
 2. **[Async Messaging](#2-async-messaging)**: Asenkron iletişim mikroservis sisteminin olmazsa olmazıdır. Hem servisler arası iletişimde hem de uzun süren işlemlerde ilaç gibi gelir.
 
-3. **Composing Microservice**: Gelen isteğin cevabını birçok servisten toplayarak farklı kanallar üzerinden toplayarak bunu cevap olarak döner. Bu konunun hızlıca anti-pattern'a dönme ihtimali var. Bunun için de bazı çözümler öneriliyor.
+3. **[Composing Microservice](#3-composing-microservice)**: Gelen isteğin cevabını birçok servisten toplayarak farklı kanallar üzerinden toplayarak bunu cevap olarak döner. Bu konunun hızlıca anti-pattern'a dönme ihtimali var. Bunun için de bazı çözümler öneriliyor.
 
 4. **Achieving Data Consistency**: Mikroservis konusunun şahsımca en zor konusu bu olabilir. Veri tutarlığını sağlamak için bir sürü pattern olsa da bunu tam anlamıyla mükemmel uygulamak gerçekten kolay bir şey değil. Burası ne kadar sorunlu olursa o derece operasyon maliyeti artıyor.
 
@@ -111,5 +111,31 @@ Ben bu yazıyı taslak olarak yazarken şu an hala Gazze'deki insanlar açlıkta
 > "Ve yardım edin birbirinize takvada ve takvaya davette, günah ve düşmanlıkta ise yardım etmeyin." (Mâide, 5:2)
 
 > "Dil bir kılıç gibidir, onunla ya kurtulursun ya da helak olursun." (İbn Mâce, Zühd, 19)
+
+ ### 3. Composing Microservice
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Serinin üçüncü bölümünde "composing microservice" konusunu ele alacağız. Birden çok servisten gelen cevapları toplayarak yanıt olarak istemciye (client) geri döner. Mikroservisin bağımsızlık ilkesine ters olsa da iş modelinin isterlerine göre kaçınılmaz olabiliyor. Bu durum, genel tasarıma zarar verebileceğinden burayı tasarlamak ilerideki birbirine bağımlı servislerin oluşmasına engel olmak açısından çok önemlidir. Hazırsak detaylarına inelim.
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Genel itibariyle çok fazla servisimiz olduğunu varsayalım. Her birinin yaptığı işler belli, ancak gerçek hayattaki isterler tahmin edebileceğiniz üzere çok karmaşıklaşabiliyor. Bazen birden çok servisten bilgiyi toplayarak bir yanıt dönmemiz gerekiyor. Böyle durumlarda başvuracağımız yöntemlerden biri de bu servislerden gelen cevapları alarak toplu bir yanıt dönmek olacaktır. Bunun bazı yöntemleri var:
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Api üzerinden bu verileri toplayarak gerekli cevaplar dönebiliriz, bununla birlikte Orchestration dediğimiz merkezi bir yapı ile bunu yapabiliriz. Servisleri sırasıyla çağırıp cevapları birleştirerek iletir. Choreography denilen diğer bir yapı ise merkezi bir yapı olmadan servislerin kendi arasında haberleşerek bu işi yapmasıdır. Servis sayısı veya karmaşıklık az ise bu yöntem daha uygun olabilir.
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Bu yöntemlerin hepsi genel itibariyle aynı probleme çözüm araralar ama beraberinde de bazı zorluk ve sıkıntılara sebebiyet verebilirler. Veri tutarsızlığı (sonraki konumuz), performans problemleri, hataların yönetimi gibi zorlukları da beraberinde getirir. Bunlara önlem olarak tabii ki çözümler üretmek mümkün. Ancak bu problemlere bulaşmadan bu işleri çözebilir miyiz sorusu da insanın aklına gelmiyor değil.
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Bunlara alternatif bazı yöntemler elbette var ancak her birinin de kendisiyle birlikte getirdiği zorluklar oluyor. CQRS, GraphQL, veri çoklama(duplicate) ve bağlamların doğru bir şekilde tasarlanması örnek verilebilir. Dediğimiz gibi her birinin de beraberinde getirdiği zorluklar olsa da burada problemi doğru tespit edip bizlere hangi çözümün daha uygun olduğunu ortaya koymak işin teknik zorluğu diye düşünüyorum.
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Bu arada bu çözümlerin birini kullandık diye diğerlerinden vazgeçmek zorundayız anlamına gelmez. Bunların birlikte kullanılması da mümkün. Örneğin bir servisten diğerine çağrıda bulunuyorsunuz ve sadece bir veriyi almanız gerekir, böyle bir durumda veri çoklama (Data Repliction) çözüm olabilir, ancak gittiğiniz servisten birçok önemli veriyi almanız gerekiyordur ve bütün bu verileri kendi tarafınıza taşımak doğru değil ise o zaman da isteği yapıp gelen veri kullanabilirsiniz. Bazen de  birçok servisten cevap almanız gerekiyordur o zaman da bunu gateway seviyesinde yapabilirsiniz. Dediğimiz gibi her birinin artı ve eksi yönleri olsa da bunun doğru veya yanlış bir cevabından ziyade size uygun olan cevabı önemli olur.
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Özetle iş ihtiyaçlarına göre bazı konularda farklı çözümler bulmamız gerekebilir. Çözümleri uygularken artı ve eksilerini iyi düşünüp kendi yapımıza uyarlarken, bunların eksi olan yöntemlerini nasıl sıfıra indirgeyebiliriz diye düşünüp o çözümleri de uygulamak genel manada güzel olur diye düşünüyorum.
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Yazıyı bir ayet-i kerime ve her probleme ayrı bir çözüm sunan Peygamber Efendimiz(s.a.v.) ile ilgili olan bir hadis yorumu ile bitirmek istiyorum.
+
+> "Rabbinin yoluna hikmetle ve güzel öğütle çağır ve onlarla en güzel şekilde mücadele et. Şüphesiz ki Rabbin, yolundan sapanları da en iyi bilendir; hidayete erenleri de en iyi bilendir." (Nahl, 16/125)
+
+> “Ey Allah’ın Resûlü! Hangi amel daha faziletlidir?” diye sorduğunda, farklı sahabilere farklı cevaplar verdiği görülür. 
+- Örneğin: Biri için “Namazı vaktinde kılmak” 
+- Bir başkası için “Ana babaya iyilik etmek” 
+- Bir diğeri için ise “Allah yolunda cihad etmek” cevabını vermiştir. 
+> Bu hadis, insanların durumlarına, ihtiyaçlarına ve önceliklerine göre çözüm sunmanın İslam’da önemli bir ilke olduğunu gösterir. (Buhârî, Edeb 1; Müslim, İman 137)
 
 
