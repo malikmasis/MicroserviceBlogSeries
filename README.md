@@ -24,7 +24,7 @@ Mikroservis konusu ile ilgili kendi adıma diyebileceğim en net şey, gerçekte
 
 3. **[Composing Microservice](#3-composing-microservice)**: Gelen isteğin cevabını birçok servisten toplayarak farklı kanallar üzerinden toplayarak bunu cevap olarak döner. Bu konunun hızlıca anti-pattern'a dönme ihtimali var. Bunun için de bazı çözümler öneriliyor.
 
-4. **Achieving Data Consistency**: Mikroservis konusunun şahsımca en zor konusu bu olabilir. Veri tutarlığını sağlamak için bir sürü pattern olsa da bunu tam anlamıyla mükemmel uygulamak gerçekten kolay bir şey değil. Burası ne kadar sorunlu olursa o derece operasyon maliyeti artıyor.
+4. **[Achieving Data Consistency](#4-achieving-data-consistency)**: Mikroservis konusunun şahsımca en zor konusu bu olabilir. Veri tutarlığını sağlamak için bir sürü pattern olsa da bunu tam anlamıyla mükemmel uygulamak gerçekten kolay bir şey değil. Burası ne kadar sorunlu olursa o derece operasyon maliyeti artıyor.
 
 5. **Centralizing Access**: Dışarıdan gelen tüm isteklerin nerelere nasıl yönlendirileceğini ele alır. Birbirine benzeyen ve çok karıştırılan 3 yapıya da değineceğiz. Özetle kalenin giriş kapıları olarak düşünebiliriz.
 
@@ -138,4 +138,39 @@ Ben bu yazıyı taslak olarak yazarken şu an hala Gazze'deki insanlar açlıkta
 - Bir diğeri için ise “Allah yolunda cihad etmek” cevabını vermiştir. 
 > Bu hadis, insanların durumlarına, ihtiyaçlarına ve önceliklerine göre çözüm sunmanın İslam’da önemli bir ilke olduğunu gösterir. (Buhârî, Edeb 1; Müslim, İman 137)
 
+
+### 4. Achieving Data Consistency
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Serinin dördüncü bölümünde, dananın kuyruğunun koptuğu bir konuyu ele alacağız: Veri tutarlığı. Önce bu konu neden önemli, sağlanmadığında ne gibi problemler yaşanabilir, ardından monolit yapılarda bunu nasıl sağlıyoruz ve son olarak da mikroservislerde ne gibi zorluklar yaşanıyor ve buna sunulan çözümler nelerdir gibi konulara değinmeye çalışacağız. Hazırsak başlayalım.
+
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Veri tutarlığı konusu gerçekten çok geniş, bu konuyu iyi anlayabilmek için öncelikle ACID ve CAP konularını iyi anlamak gerekiyor. Buralardaki başlıklar nelerden bahsediyor veya herhangi bir veri tabanını tercih ettiğimizde nereden feragat ettiğimizi doğru anlamamız gerekiyor. Bu hem monolith yapılar için hem de mikroservis yapılar için geçerlidir. Temel mantık oturduktan sonra geriye kalan işler yöntem ve prensiplerdir.
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Monolit yapılarda veri tutarlığını sağlamak mikroservis yapılara göre daha kolay. Bunun en önemli sebebi tek bir veri tabanının kullanılmasıdır. Böyle olunca tek transaction üzerinden tüm işleri bekletip tüm işlemler başarılı olduğunda bunu onaylıyoruz. Kullandığımız ORM araçları bunlara varsayılan ayarlarla bir yere kadar çözümler üretiyor. Sizin özel kullanımlarınıza göre bunlar tabii ki ayarlanabilir. Şuraya güzel bir yazı bırakayım. Bizler yolculuğumuza devam edelim.
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Monolit yapılardaki en kolay konu bile mikroservislerde karmaşıklaşabiliyor. Bunun sebebi birçok servis, veritabanı, farklı yapılar… Özetle büyük sistemlerde dolaşmak doğal olarak daha zor oluyor, ancak veri tutarlığı gibi bir yapı biraz daha zor olabiliyor. Özellikle birbiriyle haberleşen servisler arttıkça bunu yönetmek zorlaşıyor. Çünkü herhangi bir adımda meydana gelen hataya göre bir önlem almak lazım ve bu işleri geri almak gerekir. Bu yapılan geri almaların başarılı olacağını bir yere kadar garanti edebiliyoruz. Bunu sağlayan çözümlerimiz bulunmaktadır.
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Mikroservislerde veri tutarlığı dediğimizde aklımıza ilk gelen şey, mülakatların gözbebeği, SAGA pattern olsa gerek. Saga denilince temelde iki şey karşımıza çıkar. İlki merkezi bir yapı kurgulayan Orchestration ve diğeri servislerin birbiriyle haberleştiği Choreography. Her iki yöntemin de kullanılacağı durumlar var. Orchestration 3–4 servis sonrası kullanımda tavsiye edilirken Choreography daha az servisin birbiriyle haberleşmede kullanılması tavsiye ediliyor. Çünkü Choreography'de tüm servisler birbirlerine gelerek bu işlemleri yönettiği için daha zor yönetebiliyor. Daha az servis kullanımında ise karmaşık yapıya girmeden kendi aralarında bunu çözebiliyorlar. Birçok yerde dediğimiz gibi probleme göre çözüm burada da var.
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;İkinci bir yöntem ise 2PC (Two Phase Commit) tasarım şablonudur. Ya hep ya hiç kuralını işletir. Veri tutarlığı garantisi verir, ancak bütün işlemleri beklettiği için performans ile ilgili problemlere sebebiyet verebilir ya da her durum için uygun olmayabilir diyelim. Burada ödeme ile alakalı çok kritik bir işlem yapıyorsanız sizin için uygun olurken, daha toleranslı olabilecek işlemler için tercih etmeyebilirsiniz. Hem cam kenarı hem koridor olsun diyemiyoruz. Bir şeyi seçerken başka bir şeyden feragat ettiğimizi unutmayalım. Özetle bu yapı mikroservislerde çok fazla tercih edilmez bunun yerine eventual consistency (nihai tutarlılık) tercih edilir.
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Yardımcı çözümlerden biri olan Inbox/Outbox, eventual consistency sağlayan bir tasarım şablonudur. Event bazlı yapılan işlemlerde kullanılabilir. Bir tablomuz var, ilk atılan istek sonrası buraya bir kayıt atılır, eğer karşı tarafdan bu işlem başarılı bir şekilde dinlenerek işlem başarılı olursa bu sefer aynı tablodaki verimiz silinir. Bu da işlemin başarılı olduğunu gösterir, bir aksilik olduğu taktirde o veri orada kalır ve bunu farklı yöntemlerle eritmeye çalışırız. Inbox tasarım şablonu ise dinleyen taraftaki farklı bir tabloya kayıt ederek gelebilecek işlemlerin tekil olmasını sağlar.
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Eventual consistency konusuna değinmişken, compensating transactions (telafi edilebilirlik) konusuna da dokunmakta fayda var. Eventual consistency tercih eden sistemlerin hata ve eksiklikleri telafi etmek için ortaya konan bir yöntemdir. Monolit yapılardaki rollback gibi düşünebilirsiniz ama rollback tek bir işlem üzerinden devam ederken (atomic) burada birden çok akış vardır ve tüm işlemlerin sonunda olumlu veya olumsuz verinin tutarlı olması sağlanır. Bu işlemi tam olarak geri almaktan ziyade çıkan sorunu/problemi bir şekilde telafi etmek olarak algılayabiliriz.
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Şimdi de biraz hata durumlarında ne gibi yöntemler öneriliyor konusunu konuştuktan sonra yazıyı ufaktan sonlandırabiliriz. Compensating transactions bu yöntemlerden biri. Saga ile kullanılarak bu işlemleri yapabiliriz. Bununla birlikte aşağıdaki noktalara da göz atabiliriz.
+
+- Retry: İletilmeyen işlemlerin/kuyrukların belirli aralıklarla tekrar gönderilmesi. Bunlar gönderilirken karşı taraf da bunu yönetmeli yoksa birden fazla kez işleme alma tehlikesi de olabilir.
+- Timeout: Cevap gelmediğinde sistemin işlemini iptal ederek bunun olmadığını kabul etmesidir.
+- Circuit Breaker: Bir servisin başarısız olması durumunda belirli bir süre o servise gitmeme durumudur. Daha sonra tekrar deneyip servis ayağa kalktıysa oraya istek atabilir.
+- İşlem Logları: İşlem logları ile nerede nasıl hata olduğunu tespit edip bu işlemleri tekrarlamak
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Özetle monolith yapılarda veri tutarlığı nasıl sağlanırdan yola çıkarak mikroservislerde bunun farklı çözümleri ve zoruluklarını, problemlerle karşılaştığımızda nasıl çözümler üretebileceğimize dair bazı notlar paylaşmaya çalıştık. Umarım verimli olmuştur.
+
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Yazıyı birer ayet-i kerime ve hadis-i şerif ile bitirelim.
+>"Allah, size emanetleri ehline vermenizi ve insanlar arasında hükmettiğinizde adaletle hükmetmenizi emreder. Şüphesiz ki Allah, size ne güzel öğütler veriyor. Şüphesiz Allah, her şeyi işitendir, görendir." Nisa Suresi, 58. Ayet
+
+
+>"Kim bir işin başına geçirilirse, halk ona emanet edilmiş olur. O da ona karşı sorumludur." Sahih al-Buhari, Hadis 89
 
