@@ -26,7 +26,7 @@ Mikroservis konusu ile ilgili kendi adıma diyebileceğim en net şey, gerçekte
 
 4. **[Achieving Data Consistency](#4-achieving-data-consistency)**: Mikroservis konusunun şahsımca en zor konusu bu olabilir. Veri tutarlığını sağlamak için bir sürü pattern olsa da bunu tam anlamıyla mükemmel uygulamak gerçekten kolay bir şey değil. Burası ne kadar sorunlu olursa o derece operasyon maliyeti artıyor.
 
-5. **Centralizing Access**: Dışarıdan gelen tüm isteklerin nerelere nasıl yönlendirileceğini ele alır. Birbirine benzeyen ve çok karıştırılan 3 yapıya da değineceğiz. Özetle kalenin giriş kapıları olarak düşünebiliriz.
+5. **[Centralizing Access](#5-centralizing-access)**: Dışarıdan gelen tüm isteklerin nerelere nasıl yönlendirileceğini ele alır. Birbirine benzeyen ve çok karıştırılan 3 yapıya da değineceğiz. Özetle kalenin giriş kapıları olarak düşünebiliriz.
 
 6. **Separated DBs**: En sık düşülen hatalardan veya monolit yapılardaki geçişlerde en zorlanılan konulardan biridir. Her bir servisin ayrı bir veritabanı olmalıdır. Aksi halde veri tabanındaki herhangi bir hatada bütün sistem de çökmüş olacaktır.
 
@@ -173,4 +173,46 @@ Ben bu yazıyı taslak olarak yazarken şu an hala Gazze'deki insanlar açlıkta
 
 
 >"Kim bir işin başına geçirilirse, halk ona emanet edilmiş olur. O da ona karşı sorumludur." Sahih al-Buhari, Hadis 89
+
+### 5. Centralizing Access
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Serinin beşinci bölümünde olan merkezi erişim konusuna başlıyoruz. Burada ele alacağımız 3 kavram olan gateway, reverse proxy ve load balancer konuları olacak. Hepsi gelen trafiği karşılayıp gerekli servislere yönlendiren yapılar olmasına rağmen birbirlerinden farklılaştığı noktalar mevcut. Ayrıca böyle bir kurgunun ne gibi bir işlevi var, ne tür avantajlar sağlar, hangi işlemleri burada yapmalıyız gibi konulara da değinmeye çalışacağız. Hazırsak başlayalım.
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Genel yapı itibariyle dışarıdan gelen isteklerin hepsini ilk karşılayan kale kapısı olarak düşünebilirsiniz. Bu kapılardan içeri girmeyen kimse kale içine de giremez. Öncelikle buralardan içeri giriş yapılmalı. İçeriye de rastgele gidilmiyor tabii ki. Gelen isteğin nereye gideceğini sorguluyor ve ona göre en uygun yere yönlendiriyor. Load balancer ile kullanılan bazı yönlendirme yöntemleri şunlardır:
+Round Robin: Sunuculara sırasıyla yönlendirme yapılır.
+Least Connections: Aktif bağlantısı sayısı en az olan sunucuya yönlendirme yapılır.
+IP Hash: IP Hashlenerek aynı istemciden gelen tüm istekler buraya yönlendirilir.
+Random: Gelen yükü sunuculara rastgele dağıtır.
+Path-based Routing: Url tabanlı yönlendirme yapar. Mikroservis kurgusu için uygundur.
+Geographical Routing: Coğrafi konuma göre en yakın sunucuya yönlendirir.
+Content-based Routing: İsteğin türüne göre yönlendirme yapılır. Web veya mobil olarak ayrılabilir.
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Her bir yöntem farklı ihtiyaçlar için kullanılabilir. Gelen isteklerin tek bir yerden geçerek dağıtılmasının birçok avantajı olabilir. Yukarıda da bahsettiğimiz gibi gelen bütün trafiği yönetir. Yetkilendirme işlemleri yapılabilir. Rate limiter kullanılarak gelen riskler azaltılabilir. Gelen giden tüm istekler loglanabilir. Bu ve benzeri işleri her bir servis için ayrı ayrı yapmaktansa tek bir yerden yönetebiliyoruz. 
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Birçok avantajı olsa da bazı dezavantajları da yok değil. Bu öndeki kapı düştüğünde bütün maçı kaybetmiş sayılabiliriz (Single Point of Failure). Projenin yumuşak karnı gibi düşünebiliriz (Bu durumda  birden fazla kapı kurarak, biri düşse dahi sistemin devamlılığını sağlamak lazım). Karmaşıklığı artırır ve dolayısıyla performans kaybı da yaşanır (sisteme göre tolere edilebilir veya en azından iyi gözlem yapılması gerekir).
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Şimdi de yazının başındaki birbirlerine benzeyen 3 yapıya değinelim.
+* Api Gateway: Api çağrıları için özel olarak tasarlanmıştır. (Ocelot, Kong, Tyk)
+* Load Balancer: Sunucuya gelen yükleri dağıtmak için tasalanmıştır. (Nginx, HAProxy)
+* Reverse Proxy: İstekleri yönlendirmek için tasarlanmıştır. (Yarp, Caddy)
+
+![Kaynak](Images/api.jpg)
+    
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Yukarıdaki resimdeki bazı kavramları kısaca açıklamak gerekirse;
+* Authorization: Gelen kullanıcının yetkisinin kontrol edilmesidir.
+* Rate Limiting: Gelen istek sayısını sınırlamasıdır. Böylece fazla istekler engellenebilir.
+* Caching: Sık kullanılan verilerin depolanması ve böylece yanıt süreleri kısaltılır.
+* Composition: Birden çok servisten gelen cevapların birleştirerek tek bir cevap olarak iletilir.
+* Circuit breaker: Sistem aşırı yük aldığında, yük alan servisin istekleri geçici olarak durdurur.
+* Retry: Hatalı bir istek olduğunda bunun tekrar olarak gönderir.
+* Url Rewrite: Gelen url'lerin düzeltilerek istenilen formata getirilerek ilerletir
+* Failover: Arıza durumunda yedek sunucuya otomatik geçişi sağlanır.
+  
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Özetle bahsedilen 3 kavram aynı işlemleri yapıyor gibi görünse de aslında birbirlerinden ciddi farkları olduğunu görmüş olduk. Projemizin ihtiyaçlarına göre en doğru yapı kurmamız gerekir.
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Yazıyı birer ayet-i kerime ve hadis-i şerif ile sonlandıralım.
+> "Ey iman edenler! Mallarınızı aranızda haksız yere yediğiniz ve insanları yoldan çıkarmak için aldatıcı yollarla, aranızda birbirinizin malını yemeyin..." (Bakara Suresi, 2:188)
+
+> "Birinizin diğerini yönlendirmesi, ona yardımcı olması, doğru yolu göstermesi, onunla işbirliği yapması hayırlıdır." (Buhârî, İlim, 30) 
+
 
