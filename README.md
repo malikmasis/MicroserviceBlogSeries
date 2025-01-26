@@ -28,7 +28,7 @@ Mikroservis konusu ile ilgili kendi adıma diyebileceğim en net şey, gerçekte
 
 5. **[Centralizing Access](#5-centralizing-access)**: Dışarıdan gelen tüm isteklerin nerelere nasıl yönlendirileceğini ele alır. Birbirine benzeyen ve çok karıştırılan 3 yapıya da değineceğiz. Özetle kalenin giriş kapıları olarak düşünebiliriz.
 
-6. **Separated DBs**: En sık düşülen hatalardan veya monolit yapılardaki geçişlerde en zorlanılan konulardan biridir. Her bir servisin ayrı bir veritabanı olmalıdır. Aksi halde veri tabanındaki herhangi bir hatada bütün sistem de çökmüş olacaktır.
+6. **[Separated Databases](#6-separated-databases)**: En sık düşülen hatalardan veya monolit yapılardaki geçişlerde en zorlanılan konulardan biridir. Her bir servisin ayrı bir veritabanı olmalıdır. Aksi halde veri tabanındaki herhangi bir hatada bütün sistem de çökmüş olacaktır.
 
 7. **Arch Api-based**: Api tabanlı iletişimi ele alır. Bunu sağlamanın birden çok yolu var. Her birinin de kendine göre avantaj ve dezavantajları var.
 
@@ -213,6 +213,35 @@ Content-based Routing: İsteğin türüne göre yönlendirme yapılır. Web veya
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Yazıyı birer ayet-i kerime ve hadis-i şerif ile sonlandıralım.
 > "Ey iman edenler! Mallarınızı aranızda haksız yere yediğiniz ve insanları yoldan çıkarmak için aldatıcı yollarla, aranızda birbirinizin malını yemeyin..." (Bakara Suresi, 2:188)
 
-> "Birinizin diğerini yönlendirmesi, ona yardımcı olması, doğru yolu göstermesi, onunla işbirliği yapması hayırlıdır." (Buhârî, İlim, 30) 
+> "Birinizin diğerini yönlendirmesi, ona yardımcı olması, doğru yolu göstermesi, onunla işbirliği yapması hayırlıdır." (Buhârî, İlim, 30)
+
+### 6. Separated Databases
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Bu bölümde mikroservis sistemlerde her servisin kendine ait veri tabanın olması konusunu ele alacağız. Bununla birlikte genel olarak veri tabanı seçimleri, veri senkronizasyonu ve çoklaması, ayrı veri tabanlarını yönetmedeki zorluklar ve bunlara yönelik çözümler hakkında konuşmaya çalışacağız. Hazırsak başlayalım.
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Daha önceki yazılarımızda da belirttiğimiz gibi, iyi bir veri tabanı tasarımı iyi bir projeyi oluşturmanın temel noktalarından bir tanesidir. İyi bir veri tabanı tasarımı ve belki de ondan önce doğru bir veri tabanı seçimi bu konuyu daha da önemli hale getirmektedir. Burada sadece veri tabanı ürünlerinden bahsetmiyorum, SQL ve NoSQL gibi veri tabanı türlerinin seçiminden de bahsediyorum.
+    
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Her konuda olduğu gibi veri tabanını seçmeden önce ihtiyaçlarımızı doğru bir şekilde ortaya koymalıyız. Genel olarak bahsedersek veriler arası sıkı bir ilişki var ve veri tutarlığı sizin için çok kritik ise SQL veri tabanları tercih edilirken hız ve yüksek ölçeklenebilirlik gibi konular sizin için daha kritik ise NoSQL veri tabanları genel itibariyle daha çok işinizi görecektir. Türünü seçtikten sonra hangi ürünü kullanacağız ise yine ihtiyaçlarınıza göre değişecektir.
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Veri tutarlığı her proje açısından kritik olur, ancak bunu ne kadar tolera edebildiğiniz de bir o kadar önemli. Bazı sistemlerde her daim veri tutarlığı olması gerekirken bazı sistemlerde önceki yazımızda da bahsettiğimiz nihai tutarlılık yeterli olabilir. Özellikle mikroservis sistemlerde nihai tutarlılık daha çok öne çıkıyor olabilir. Belki kaba bir tabir olacak ama arabanın hakkını vermek istiyorsanız nihai tutarlılık sizin için daha uygun olabilir. Bu konuya yukarıda bahsettiğimiz yazımızda çokça değindiğimiz için burayı geçiyoruz.
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Mikroservis sistemlerde veri tutarlığı sağlamak takdir ederseniz ki daha zor olabiliyor. Bunun sebeplerinden biri de her servisin kendi veri tabanının olmasıdır. Veri tabanlarının ayrı olmalarının ölçeklenebilirlik, performans, sistemin bağımsız olması gibi avantajları var iken; veri tutarlığı, bakım zorluğu, operasyon bakım gibi yükleri de bulunmaktadır.
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Peki veri tabanlarını ayırdık, servisler arası iletişim ve gerekli verilerin alınması konusu ortaya çıktığında neler yapabiliriz. Servis çağrıları yaparak verileri alabilir (senkron / asenkron) ya da veri çoklaması yapabiliriz.
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Veri çoklaması denilince akla CDC (change data capture) geliyor, ancak bununla birlikte ECST (event-carried state transfer) de akla gelmeli. İkisi de amaç olarak veriyi diğer veri tabanında çoklamayı hedeflerken takip ettikleri yollar nedeniyle birbirinden ayrılır. CDC veri tabanı bazında çalışırken (veri tabanında herhangi bir değişiklik olduğunda diğer veri tabanını günceller), ECST uygulama bazında çalışır (belirtilen tabloya kayıt atıldığında, event yakalanır ve diğer servis de kendi veri tabanını günceller). İkisinin de kendine göre hem kullanım alanları hem de bunları yapan araçları mevcuttur.
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Hangi durumlarda hangisini kullanmak daha mantıklı diye akıllara bir soru geliyor. Verinin okuması çok yoğun bir şekilde yapılıyorsa ve veriniz de sık güncellenen bir veri değil ise çoklama yapmak daha mantıklı durabilir, ancak verinin sık güncellenen bir veri ise o zaman her iki veri tabanı için de sürekli benzer işler yapacağınızdan çağrı yapmak daha makul olabilir. Ayrıca veri tutarlılığı sizin için daha kritik ise veri senkronize konusuyla uğraşmamak adına çağrı yapmak daha doğru olacaktır. 
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Bu seride çokça bahsettiğimiz ve muhtemelen de tekrar bahsedeceğimiz şey, aslında bahsedilen yöntemlerin birçoğunun doğru veya yanlış olmasından ziyade ihtiyaçlara göre olmasıdır. Hatta bu mikroservis mi monolit mi tercih etmeliyiz sorusunun cevabı için de böyledir. İhtiyaçlara göre çözümler elbette değişecektir. 
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Özetle elimizden geldiğince servislerin kendi veri tabanları olduklarında avantajlarıyla birlikte ne gibi zorlukları olacağını ve bu zorluklara nasıl çözümler getirebileceği hakkında konuşmaya çalıştık. Umarız faydalı olmuştur.
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Yazıyı birer ayet-i kerime ve hadis-i şerif ile noktayalım.
+
+
+> "Ve yeryüzünde bozgunculuk yapmayın; oysa ki Allah, bozguncuları sevmez."
+(Fasıl: 5, Ayet: 64)
+
+> "Müslüman, diğer Müslümanların ellerinden ve dillerinden zarar görmediği kişidir."      (Sahih-i Buhari, Kitâbü'l-İman, Hadis No: 10/457)   
 
 
