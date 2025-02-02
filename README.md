@@ -30,7 +30,7 @@ Mikroservis konusu ile ilgili kendi adıma diyebileceğim en net şey, gerçekte
 
 6. **[Separated Databases](#6-separated-databases)**: En sık düşülen hatalardan veya monolit yapılardaki geçişlerde en zorlanılan konulardan biridir. Her bir servisin ayrı bir veritabanı olmalıdır. Aksi halde veri tabanındaki herhangi bir hatada bütün sistem de çökmüş olacaktır.
 
-7. **Arch Api-based**: Api tabanlı iletişimi ele alır. Bunu sağlamanın birden çok yolu var. Her birinin de kendine göre avantaj ve dezavantajları var.
+7. **[Arch API-based](#7-arch-api-based)**: Api tabanlı iletişimi ele alır. Bunu sağlamanın birden çok yolu var. Her birinin de kendine göre avantaj ve dezavantajları var.
 
 8. **Resiliency**: Bir servise yapılan çağrıların belirli bir sebepten dolayı cevap vermemesi sonucu orada bağlantıyı keserek bütün sisteme yük binmesine engel olur. Belirli dönemlerde buradaki problem düzelip düzelmediğini kontrol eder, düzelmiş ise tekrar bağlantıya izin verir.
 
@@ -96,7 +96,7 @@ Ben bu yazıyı taslak olarak yazarken şu an hala Gazze'deki insanlar açlıkta
 
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Servislerin birbirine gevşek bağımlı hale gelmesini peki nasıl sağlarız? Bunun çözümlerinden biri, iletişimin asenkron olmasıdır. Senkron olan iletişimde servislerinden biri çöktüğünde diğer servis oradan gelecek cevabı bekleyecektir ve bu da sistemde bir gecikmeye sebep olacaktır (tabii ki bunun da çözümleri mevcut. Circuit breaker, timeout, fallback vb), ancak iletişim asenkron olduğunda bu problemler oldukça azalır (tabii ki farklı problem çıkabilir :) ).
 
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Peki her servis çağrısında asenkron iletişim mi kullanmalıyız? Bunun için mümkün olduğunca sistemi esnek tutabilmek açısından evet ama bazen diğer servislerden gelen cevabı beklememiz gerekiyorsa o zaman senkron iletişim kaçınılmaz hale geliyor. Ancak bazen de verilerin her iki servisin veri tabanında da tutulması konusu gündeme gelebilir. CDC (Change Data Capture) konusuna önümüzdeki yazılarda değiniyor olacağız.
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Peki her servis çağrısında asenkron iletişim mi kullanmalıyız? Bunun için mümkün olduğunca sistemi esnek tutabilmek açısından evet ama bazen diğer servislerden gelen cevabı beklememiz gerekiyorsa o zaman senkron iletişim kaçınılmaz hale geliyor. Ancak bazen de verilerin her iki servisin veri tabanında da tutulması konusu gündeme gelebilir. CDC (Change Data Capture) konusuna önümüzdeki bölümlerde değiniyor olacağız.
 
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Asenkron mesajlaşmanın daha da önemli hale geldiği konulardan bazıları; uzayan veya hemen işlenmesi çok kritik olmayan konular. Eposta, sms veya bildirim atmak, log işlemleri bunlara örnek olarak gösterilebilir. Bu tarz işlemler için bu konu daha da önemli hale gelebilir.
 
@@ -128,7 +128,7 @@ Ben bu yazıyı taslak olarak yazarken şu an hala Gazze'deki insanlar açlıkta
 
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Özetle iş ihtiyaçlarına göre bazı konularda farklı çözümler bulmamız gerekebilir. Çözümleri uygularken artı ve eksilerini iyi düşünüp kendi yapımıza uyarlarken, bunların eksi olan yöntemlerini nasıl sıfıra indirgeyebiliriz diye düşünüp o çözümleri de uygulamak genel manada güzel olur diye düşünüyorum.
 
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Yazıyı bir ayet-i kerime ve her probleme ayrı bir çözüm sunan Peygamber Efendimiz(s.a.v.) ile ilgili olan bir hadis yorumu ile bitirmek istiyorum.
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Bölümü bir ayet-i kerime ve her probleme ayrı bir çözüm sunan Peygamber Efendimiz(s.a.v.) ile ilgili olan bir hadis yorumu ile bitirmek istiyorum.
 
 > "Rabbinin yoluna hikmetle ve güzel öğütle çağır ve onlarla en güzel şekilde mücadele et. Şüphesiz ki Rabbin, yolundan sapanları da en iyi bilendir; hidayete erenleri de en iyi bilendir." (Nahl, 16/125)
 
@@ -146,7 +146,7 @@ Ben bu yazıyı taslak olarak yazarken şu an hala Gazze'deki insanlar açlıkta
 
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Veri tutarlığı konusu gerçekten çok geniş, bu konuyu iyi anlayabilmek için öncelikle ACID ve CAP konularını iyi anlamak gerekiyor. Buralardaki başlıklar nelerden bahsediyor veya herhangi bir veri tabanını tercih ettiğimizde nereden feragat ettiğimizi doğru anlamamız gerekiyor. Bu hem monolith yapılar için hem de mikroservis yapılar için geçerlidir. Temel mantık oturduktan sonra geriye kalan işler yöntem ve prensiplerdir.
 
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Monolit yapılarda veri tutarlığını sağlamak mikroservis yapılara göre daha kolay. Bunun en önemli sebebi tek bir veri tabanının kullanılmasıdır. Böyle olunca tek transaction üzerinden tüm işleri bekletip tüm işlemler başarılı olduğunda bunu onaylıyoruz. Kullandığımız ORM araçları bunlara varsayılan ayarlarla bir yere kadar çözümler üretiyor. Sizin özel kullanımlarınıza göre bunlar tabii ki ayarlanabilir. Şuraya güzel bir yazı bırakayım. Bizler yolculuğumuza devam edelim.
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Monolit yapılarda veri tutarlığını sağlamak mikroservis yapılara göre daha kolay. Bunun en önemli sebebi tek bir veri tabanının kullanılmasıdır. Böyle olunca tek transaction üzerinden tüm işleri bekletip tüm işlemler başarılı olduğunda bunu onaylıyoruz. Kullandığımız ORM araçları bunlara varsayılan ayarlarla bir yere kadar çözümler üretiyor. Sizin özel kullanımlarınıza göre bunlar tabii ki ayarlanabilir.
 
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Monolit yapılardaki en kolay konu bile mikroservislerde karmaşıklaşabiliyor. Bunun sebebi birçok servis, veritabanı, farklı yapılar… Özetle büyük sistemlerde dolaşmak doğal olarak daha zor oluyor, ancak veri tutarlığı gibi bir yapı biraz daha zor olabiliyor. Özellikle birbiriyle haberleşen servisler arttıkça bunu yönetmek zorlaşıyor. Çünkü herhangi bir adımda meydana gelen hataya göre bir önlem almak lazım ve bu işleri geri almak gerekir. Bu yapılan geri almaların başarılı olacağını bir yere kadar garanti edebiliyoruz. Bunu sağlayan çözümlerimiz bulunmaktadır.
 
@@ -168,7 +168,7 @@ Ben bu yazıyı taslak olarak yazarken şu an hala Gazze'deki insanlar açlıkta
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Özetle monolith yapılarda veri tutarlığı nasıl sağlanırdan yola çıkarak mikroservislerde bunun farklı çözümleri ve zoruluklarını, problemlerle karşılaştığımızda nasıl çözümler üretebileceğimize dair bazı notlar paylaşmaya çalıştık. Umarım verimli olmuştur.
 
 
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Yazıyı birer ayet-i kerime ve hadis-i şerif ile bitirelim.
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Bölümü birer ayet-i kerime ve hadis-i şerif ile bitirelim.
 >"Allah, size emanetleri ehline vermenizi ve insanlar arasında hükmettiğinizde adaletle hükmetmenizi emreder. Şüphesiz ki Allah, size ne güzel öğütler veriyor. Şüphesiz Allah, her şeyi işitendir, görendir." Nisa Suresi, 58. Ayet
 
 
@@ -190,7 +190,7 @@ Content-based Routing: İsteğin türüne göre yönlendirme yapılır. Web veya
 
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Birçok avantajı olsa da bazı dezavantajları da yok değil. Bu öndeki kapı düştüğünde bütün maçı kaybetmiş sayılabiliriz (Single Point of Failure). Projenin yumuşak karnı gibi düşünebiliriz (Bu durumda  birden fazla kapı kurarak, biri düşse dahi sistemin devamlılığını sağlamak lazım). Karmaşıklığı artırır ve dolayısıyla performans kaybı da yaşanır (sisteme göre tolere edilebilir veya en azından iyi gözlem yapılması gerekir).
 
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Şimdi de yazının başındaki birbirlerine benzeyen 3 yapıya değinelim.
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Şimdi de bölümün başındaki birbirlerine benzeyen 3 yapıya değinelim.
 * Api Gateway: Api çağrıları için özel olarak tasarlanmıştır. (Ocelot, Kong, Tyk)
 * Load Balancer: Sunucuya gelen yükleri dağıtmak için tasalanmıştır. (Nginx, HAProxy)
 * Reverse Proxy: İstekleri yönlendirmek için tasarlanmıştır. (Yarp, Caddy)
@@ -210,7 +210,7 @@ Content-based Routing: İsteğin türüne göre yönlendirme yapılır. Web veya
   
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Özetle bahsedilen 3 kavram aynı işlemleri yapıyor gibi görünse de aslında birbirlerinden ciddi farkları olduğunu görmüş olduk. Projemizin ihtiyaçlarına göre en doğru yapı kurmamız gerekir.
 
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Yazıyı birer ayet-i kerime ve hadis-i şerif ile sonlandıralım.
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Bölümü birer ayet-i kerime ve hadis-i şerif ile sonlandıralım.
 > "Ey iman edenler! Mallarınızı aranızda haksız yere yediğiniz ve insanları yoldan çıkarmak için aldatıcı yollarla, aranızda birbirinizin malını yemeyin..." (Bakara Suresi, 2:188)
 
 > "Birinizin diğerini yönlendirmesi, ona yardımcı olması, doğru yolu göstermesi, onunla işbirliği yapması hayırlıdır." (Buhârî, İlim, 30)
@@ -218,11 +218,11 @@ Content-based Routing: İsteğin türüne göre yönlendirme yapılır. Web veya
 ### 6. Separated Databases
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Bu bölümde mikroservis sistemlerde her servisin kendine ait veri tabanın olması konusunu ele alacağız. Bununla birlikte genel olarak veri tabanı seçimleri, veri senkronizasyonu ve çoklaması, ayrı veri tabanlarını yönetmedeki zorluklar ve bunlara yönelik çözümler hakkında konuşmaya çalışacağız. Hazırsak başlayalım.
 
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Daha önceki yazılarımızda da belirttiğimiz gibi, iyi bir veri tabanı tasarımı iyi bir projeyi oluşturmanın temel noktalarından bir tanesidir. İyi bir veri tabanı tasarımı ve belki de ondan önce doğru bir veri tabanı seçimi bu konuyu daha da önemli hale getirmektedir. Burada sadece veri tabanı ürünlerinden bahsetmiyorum, SQL ve NoSQL gibi veri tabanı türlerinin seçiminden de bahsediyorum.
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Daha önceki bölümlerde de belirttiğimiz gibi, iyi bir veri tabanı tasarımı iyi bir projeyi oluşturmanın temel noktalarından bir tanesidir. İyi bir veri tabanı tasarımı ve belki de ondan önce doğru bir veri tabanı seçimi bu konuyu daha da önemli hale getirmektedir. Burada sadece veri tabanı ürünlerinden bahsetmiyorum, SQL ve NoSQL gibi veri tabanı türlerinin seçiminden de bahsediyorum.
     
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Her konuda olduğu gibi veri tabanını seçmeden önce ihtiyaçlarımızı doğru bir şekilde ortaya koymalıyız. Genel olarak bahsedersek veriler arası sıkı bir ilişki var ve veri tutarlığı sizin için çok kritik ise SQL veri tabanları tercih edilirken hız ve yüksek ölçeklenebilirlik gibi konular sizin için daha kritik ise NoSQL veri tabanları genel itibariyle daha çok işinizi görecektir. Türünü seçtikten sonra hangi ürünü kullanacağız ise yine ihtiyaçlarınıza göre değişecektir.
 
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Veri tutarlığı her proje açısından kritik olur, ancak bunu ne kadar tolera edebildiğiniz de bir o kadar önemli. Bazı sistemlerde her daim veri tutarlığı olması gerekirken bazı sistemlerde önceki yazımızda da bahsettiğimiz nihai tutarlılık yeterli olabilir. Özellikle mikroservis sistemlerde nihai tutarlılık daha çok öne çıkıyor olabilir. Belki kaba bir tabir olacak ama arabanın hakkını vermek istiyorsanız nihai tutarlılık sizin için daha uygun olabilir. Bu konuya yukarıda bahsettiğimiz yazımızda çokça değindiğimiz için burayı geçiyoruz.
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Veri tutarlığı her proje açısından kritik olur, ancak bunu ne kadar tolera edebildiğiniz de bir o kadar önemli. Bazı sistemlerde her daim veri tutarlığı olması gerekirken bazı sistemlerde önceki bölümde de bahsettiğimiz nihai tutarlılık yeterli olabilir. Özellikle mikroservis sistemlerde nihai tutarlılık daha çok öne çıkıyor olabilir. Belki kaba bir tabir olacak ama arabanın hakkını vermek istiyorsanız nihai tutarlılık sizin için daha uygun olabilir. Bu konuya yukarıda bahsettiğimiz yazımızda çokça değindiğimiz için burayı geçiyoruz.
 
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Mikroservis sistemlerde veri tutarlığı sağlamak takdir ederseniz ki daha zor olabiliyor. Bunun sebeplerinden biri de her servisin kendi veri tabanının olmasıdır. Veri tabanlarının ayrı olmalarının ölçeklenebilirlik, performans, sistemin bağımsız olması gibi avantajları var iken; veri tutarlığı, bakım zorluğu, operasyon bakım gibi yükleri de bulunmaktadır.
 
@@ -236,7 +236,7 @@ Content-based Routing: İsteğin türüne göre yönlendirme yapılır. Web veya
 
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Özetle elimizden geldiğince servislerin kendi veri tabanları olduklarında avantajlarıyla birlikte ne gibi zorlukları olacağını ve bu zorluklara nasıl çözümler getirebileceği hakkında konuşmaya çalıştık. Umarız faydalı olmuştur.
 
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Yazıyı birer ayet-i kerime ve hadis-i şerif ile noktayalım.
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Bölümü birer ayet-i kerime ve hadis-i şerif ile noktayalım.
 
 
 > "Ve yeryüzünde bozgunculuk yapmayın; oysa ki Allah, bozguncuları sevmez."
@@ -244,4 +244,26 @@ Content-based Routing: İsteğin türüne göre yönlendirme yapılır. Web veya
 
 > "Müslüman, diğer Müslümanların ellerinden ve dillerinden zarar görmediği kişidir."      (Sahih-i Buhari, Kitâbü'l-İman, Hadis No: 10/457)   
 
+### 7. Arch API-based 
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Serinin yedinci bölümünde API tabanlı mimariyi ele alıyor olacağız. Önceki bölümlerde asenkron iletişimden, veri tutarlığının zorluğundan, ayrı veri tabanlarının kullanılmasından ve burada ortaya çıkan problemlerde ve hangi durumlarda hangi yapıların kullanılması daha uygun olur gibi konulardan bahsetmiştik. Bugün ise asenkron iletişimde API tabanlı iletişim var. Çeşitleri nelerdir, hangi durumalarda hangisi kullanılır, ne gibi avantaj ve dezavatajları var gibi konulara değinmeye çalışacağız. Hazırsak başlayalım.
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;API tabanlı sistemler temel manada servislerin bağımsız olarak tasarlanıp gerektiği durumlarda birbirleriyle iletişimde olmayı hedefler. Bu bağımsızlık servis bazlı ölçeklenebilirlik (her servisin getirdiği yüke göre büyüp küçülmesi), bir servisin bir sorumluluğu olması (single responsibility), teknoloji seçimi gibi avantajlar sağlar. Önceki bölümlerde bahsettiğimiz bu servislerin önüne de zorunlu olmasa da genel olarak bir API Gateway tarzında bir yapı kurulur. 
+    
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;API tabanlı iletişim denilince aklımıza gelmesi gereken ilk üç yapı RESTful, gRPC ve GraphQL'dir. Şimdi bu üç yapıya kısaca bakalım.
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;RESTful API, HTTP protokolü üzerinden çalışan, web servislerde sıkça kullanılan hepimizin aşi olduğu JSON tabanlı bir yapıdır. HTTP protokolünde PUT, POST, GET gibi çeşitli metodları var. Kendine has belirli standartları vardır. Anlaşılması ve kullanılması kolay, herkesin hayatında yer alan, tüm dillerle entegre çalışabildiği için nerdeyse standart haline gelmiştir. Nesneler büyüdüğünde JSON yapılı olmasından kaynaklı hem gereksiz veriler gelebilir hem de sisteme ek bir yük oluşturabilir.
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;gRPC, Google tarafından geliştirilmiş, hızlı ve tip güvenli bir yapı sağlar. Protobuf denilen bir yapı kullanır. Bu da JSON yapısına göre çok daha hızlı çalışır. Bu veriler ise JSON dosyalarında değil de proto dosyalarında saklanır. Öğrenmesi ve kavraması RESTful'a göre biraz daha zordur, dosya okuması da JSON'a göre biraz daha zordur.
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;GraphQL, Facebook tarafından geliştirilen ve RESTful'a alternatif olarak sunulmuştur. RESTful'da sunucunun döndüğü yapı sabit iken GraphQL'de ihtiyaca göre değişir. RESTful'da her istek için ayrı bir endpoint tasarlanırken, GraphQL'de ise tek endpoint üzerinden tüm veriler alınabilir. İstemci neye ihtiyaç duyuyorsa sadece o kısmı alıyor. Böylece endpoint şu kolon olsa iyi, bu kolon olmasa da olur gibi problemlerden de kurtulmuş oluruz. Böyle esnek bir yapı kurgular, gereksiz veriyi de önlem olur. Cachleme ve performans gibi konularda zorluklar çıkarabilmektedir. N+1 denilen bir problemi bulunur. Bu arada bunun da dosya yapısı RESTful gibi JSON'dır. 
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Yukarıda da bahsettiğimiz gibi her birinin avantaj ve dezavantajları var. Sistemi kurgularken ihtiyaca göre tasarlamak en doğru yol olacaktır, ancak internal servisler arasında özellikle hıza ihtiyaç duyulursa gRPC kullanılıyor. Özellikle kullanımına aşina olundukça bu kullanımların zamanla artacağını düşünüyorum. Ancak dışarıya açılan durumlarda daha çok rest kullanıldığına şahit oluyorum. GraphQL ise daha çok front-end (single page) yapılarda daha çok tercih edilmeye başlanıyor.
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Önceki bölümde de belirttiğimiz gibi servisler arası veri tutarlığı çok önemli ise veya o servisten gelen cevaba göre bir işlem yapılacaksa veya sistem sık kayıt atılan/güncellenen bir servis ise asenkron iletişimi kullanmak doğru olacaktır. Her şartta her yöntemi kullanmak değil, doğru yerde doğru yöntemi kullanmak bizim her zamanki parolamız olacaktır.
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Bölümü birer ayet-i kerim ve hadis-i şerif ile bitirelim.
+
+> "Ey iman edenler! Eğer bir fasık size bir haber getirirse, onu iyice araştırın. Yoksa, bilmeden bir topluluğa zarar verir ve yaptığınıza pişman olursunuz." (Hucurat Suresi, 49:6)
+
+> "Her birinizin dili, kalbinden daha öncedir. Çünkü kişi dilinin ne söylediğine dikkat etmezse, kalbi o söze uymayabilir." (Tirmizi, Birr, 25)
 
