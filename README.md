@@ -3,18 +3,18 @@
 ![Free Palestine](Images/free-palestine.jpg)
 
 
-Bu seride toplamda 16 yazı bulunmaktadır (giriş yazısı hariç). Yazılarda eksik fazla olduğunu düşündüğünüz noktalar için geri dönüşleriniz ve PR'larınızı bekliyoruz!
+Bu seride toplamda 16 bölüm bulunmaktadır (giriş bölümü hariç). Bölümlerde eksik fazla olduğunu düşündüğünüz noktalar için geri dönüşleriniz ve PR'larınızı bekliyoruz!
 
 
 **Giriş: Index[0]**
 
-Çok uzun süredir notlarımda olan ve hep yazmak istediğim bir seriye Allah’ın izniyle başlıyorum. Yıllar önce izlemiş olduğum [bu videoda](https://www.youtube.com/watch?v=a3ehu_Yv96U&t=2671s&ab_channel=MustafaVarank) not aldığım 16 başlığı 16 ayrı yazı olarak ele alıyorum. Sadece başlıkları buradan almış olup içeriği özgün olarak oluşturmaya gayret ettim. Böyle düşününce gerçekten zor bir hedef gibi görünüyor, ancak birincisine niyet edip başlarsak inşaAllah gerisi de gelir diye düşünüyorum..
+Çok uzun süredir notlarımda olan ve hep yazmak istediğim bir seriye Allah’ın izniyle başlıyorum. Yıllar önce izlemiş olduğum [bu videoda](https://www.youtube.com/watch?v=a3ehu_Yv96U&t=2671s&ab_channel=MustafaVarank) not aldığım 16 başlığı 16 ayrı bölüm olarak ele alıyorum. Sadece başlıkları buradan almış olup içeriği özgün olarak oluşturmaya gayret ettim. Böyle düşününce gerçekten zor bir hedef gibi görünüyor, ancak birincisine niyet edip başlarsak inşaAllah gerisi de gelir diye düşünüyorum..
 
-Bu yazı girizgah yazısı olacak. Hangi konuları ele alacağımızı belirtip özet mahiyetinde birkaç cümle ile kısa kısa açıklamalar yapacağız. Daha sonra yeni yazıları yazdıkça buradaki linkleri de güncelliyor oluruz inşaAllah. Bazı konular hakkında daha çok bilgi sahibiyken bazı konularda benim de daha fazla okumalar yapmam lazım. Bu yolculuğa bir "assignment" [projesi](https://github.com/malikmasis/TelephoneDirectory) ile başlayıp onu belirli aralıklarla geliştirmeye devam ettim. Bunu daha önce bu [yazımda](https://medium.com/software-development-turkey/mikroservis-maceram-1e070463d0ea) dile getirmiştim. Devam eden süreçte de ayrıca bir yazı yazmadım. Hep bu yazıyı güncelleyerek veya Github projesini geliştirerek devam ettim, ancak bu sefer önüme zorlu da olsa bir hedef koymak istedim. Rabbim utandırmasın.
+Bu bölüm girizgah kısmı olacak. Hangi konuları ele alacağımızı belirtip özet mahiyetinde birkaç cümle ile kısa kısa açıklamalar yapacağız. Daha sonra yeni yazıları yazdıkça buradaki linkleri de güncelliyor oluruz inşaAllah. Bazı konular hakkında daha çok bilgi sahibiyken bazı konularda benim de daha fazla okumalar yapmam lazım. Bu yolculuğa bir "assignment" [projesi](https://github.com/malikmasis/TelephoneDirectory) ile başlayıp onu belirli aralıklarla geliştirmeye devam ettim. Bunu daha önce bu [yazımda](https://medium.com/software-development-turkey/mikroservis-maceram-1e070463d0ea) dile getirmiştim. Devam eden süreçte de ayrıca bir yazı yazmadım. Hep bu yazıyı güncelleyerek veya Github projesini geliştirerek devam ettim, ancak bu sefer önüme zorlu da olsa bir hedef koymak istedim. Rabbim utandırmasın.
 
 Mikroservis nedir, ne değildir gibi sorulara girmeyi pek düşünmüyorum açıkçası. Bu yazı serisi biraz daha bu işi bilen ya da en azından merak eden kesime yönelik olacak. Her ne kadar son projemde çok etkin bir şekilde bu yapıları kullansam da konuların derli toplu olması açısından veya projeye dalıp kaçırdığımız noktalar var ise öncelikle kendimi de geliştirmek açısından ele alıyorum. Hata, eksik veya fazla olduğunu düşündüğünüz yerler olursa elbette desteklerinize açık olduğumu da belirtmeden geçemeyeceğim.
 
-Mikroservis konusu ile ilgili kendi adıma diyebileceğim en net şey, gerçekten ihtiyaç olduğuna ikna iseniz ve buna da uygun takım ya da takımlarınız var ise bu işe girmenizi naçizane öneriririm. Aksi halde siz ve ekibiniz için çok zorlu bir dönem başlayabilir. Nedenlerini önümüzdeki yazılarda zaman zaman değiniyor oluruz. Ufaktan başlayalım.
+Mikroservis konusu ile ilgili kendi adıma diyebileceğim en net şey, gerçekten ihtiyaç olduğuna ikna iseniz ve buna da uygun takım ya da takımlarınız var ise bu işe girmenizi naçizane öneriririm. Aksi halde siz ve ekibiniz için çok zorlu bir dönem başlayabilir. Nedenlerini önümüzdeki bölümlerde zaman zaman değiniyor oluruz. Ufaktan başlayalım.
 
 ---
 
@@ -32,7 +32,7 @@ Mikroservis konusu ile ilgili kendi adıma diyebileceğim en net şey, gerçekte
 
 7. **[Arch API-based](#7-arch-api-based)**: Api tabanlı iletişimi ele alır. Bunu sağlamanın birden çok yolu var. Her birinin de kendine göre avantaj ve dezavantajları var.
 
-8. **Resiliency**: Bir servise yapılan çağrıların belirli bir sebepten dolayı cevap vermemesi sonucu orada bağlantıyı keserek bütün sisteme yük binmesine engel olur. Belirli dönemlerde buradaki problem düzelip düzelmediğini kontrol eder, düzelmiş ise tekrar bağlantıya izin verir.
+8. **[Resiliency](#8-resiliency)**: Bir servise yapılan çağrıların belirli bir sebepten dolayı cevap vermemesi sonucu orada bağlantıyı keserek bütün sisteme yük binmesine engel olur. Belirli dönemlerde buradaki problem düzelip düzelmediğini kontrol eder, düzelmiş ise tekrar bağlantıya izin verir.
 
 9. **Backward Compatibility**: Eskiye yönelik servislerin çalışırlığını ele alır. Bunun için versiyonlama kullanılan genel çözümlerden biridir. Aksi halde yaptığınız radikal bir değişiklik (breaking change) burayı kullanan eski istemcileri olumsuz etkileyecektir.
 
@@ -266,4 +266,38 @@ Content-based Routing: İsteğin türüne göre yönlendirme yapılır. Web veya
 > "Ey iman edenler! Eğer bir fasık size bir haber getirirse, onu iyice araştırın. Yoksa, bilmeden bir topluluğa zarar verir ve yaptığınıza pişman olursunuz." (Hucurat Suresi, 49:6)
 
 > "Her birinizin dili, kalbinden daha öncedir. Çünkü kişi dilinin ne söylediğine dikkat etmezse, kalbi o söze uymayabilir." (Tirmizi, Birr, 25)
+
+### 8. Resiliency
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Serinin sekizinci bölümüne hoş geldiniz. Önceki bölümlerde şimdiye kadar genel itibariyle veri üzerine daha çok yoğunlaştık, ancak bu bölümde herhangi bir sebepten dolayı cevap vermeyen servislerle ilgili ne yapabileceğimizi konuşacağız. Bu kavrama dayanıklılık (resiliency) diyoruz. Peki sistemlerin dayanıklı olabilmesi için neler yapabiliriz? Hazırsak başlayalım.
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Dayanıklık denilince akla her ne kadar devre kesici (Circuit Breaker) gelmiş de olsa sistemi daha dayanıklo kılmak için birden fazla yöntem mevcut. Bunlardan kısaca bahsedip ne gibi sorunlara çözüm aradıklarını ele almaya çalışacağız.
+    
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Devre kesici, bir sebepten dolayı bir serviste oluşan bir hatanın tüm sistemi etkilememesi adına o servise giden istekler durdurulur (kırmızı ışık). Tüm sistemi kaybetmektense o servis geçici olarak devre dışı bırakılır. Belirli bir süre sonra geçici olarak servis açılır (sarı ışık) eğer sistem düzeldiyse oradaki anahtar indirilir (yeşil ışık) ve sistem hayatına devam eder ancak sistemde hala problem var ise tekradan kapatılır. En bilindik olarak kullanılan araç ise Polly'dir. 
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Retry, sistemde belirli sebeplerden dolayı oluşan kopmalarda isteği tekrar atmak isteyebiliriz. Çünkü bazen geçici problem yaşanır ve sonraki isteklerde oluşan hata tekrarlanmaz, ancak bazen hata kalıcıdır böyle durumlarda da denemeleri makul seviyede tutmakta fayda var. Polly burada da kullanılan bir araçtır.
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Timeout, yapılan istekler farklı sebeplerden dolayı geç cevap verebilir. Böyle durumlarda sistemi yormamak adına belirli bir süreyi geçen istekleri iptal edebiliriz. Ayrıca uzun süren işlemi bazen de kullanıcı iptal eder, burada da "CancellationToken" kullandığımızda bu çağrı timeout'a düşmeden direkt sonlanır ve sisteme ek yük yapmaktan kaçınmış oluruz.
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Bulkhead, servislerin birbirinden bağımsız olmasıdır. Yani bir servis çöktüğünde ona bağımlı bir servis var ise onun da çökmemesi ve hayatına devam etmesi gerekir. Bunun için de neler yapabilirizi önceki bölümlerde epey bahsettik. 
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Failover, hata oluşan serviste yedek senaryosunun hazır olması durumudur. Sakatlanan futbolcunun yerine takım arkadaşının oyuna dahil olması gibi düşünebiliriz. Consul bu konuda iyi bilinen bir araçtır.
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Graceful Degredation, sistemde oluşan hatada bazı bölümlerin en azından sınırlı şekilde çalışabilmesidir. Kolu kırılan bir hastanın hayati fonksiyonlarını yerine getirmesi olarak düşünebiliriz. LauncDarkly gibi araçlarla yeni eklenen özelliklerin açılıp kapanması bu konuya örnek verilebilir.
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Load balancing, daha önceki bölümlerde bahsettiğimiz üzere yükün servislere doğru ve adil bir şekilde dağıtılması veya fazla yük alan servisin ölçeklendirilmesini sağlar. En iyi bilinen araçlardan biri NGINX'tir.
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Monitoring ve Alert, sistemle ilgili olağanüstü durumlar yaşandığında bunun en azından kullanıcılardan önce haberiniz olması gerekir ve buna en hızlı şekilde müdahale ederek son kullanıcıya yansımadan problemi çözmek kritik bir davranıştır. Prometheus ve Grafana ikilisi piyasada en bilinen açık kaynaklı araçlardır.
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Distributed Tracing, servisler arası çağrıları takip edebilmek ve hangi aşamada, nerede tıkanma olmuş gibi bütün verileri size vermesi açısından çok kritiktir. Sizin o problemi tekrardan tespit etmenize gerek kalmadan size nerede problem olduğunu söylemeli ve ona göre hızlı müdahale yapabilmeliyiz. Son dönemlerde OpenTelemetry adından sıkça bahsettirmektedir.
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Health Check, servislerin ayakta olup olmadığını kontrol eder. Servislerin bağlı olduğu veri tabanı, kuyruk yapıları gibi bağımlılıklar var ise onlar da kontrol edilip her şey yolunda mı diye haber verir. Varsayılan olarak dotnet içerisinde gelen özelliği de kullanabilirsiniz.
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Sistemlerde hata olmasını engellemek kadar, hata olduğunda bunu hızlı bir şekilde ayağa kaldırmak da bir o kadar önemlidir (Chaos Monkey göz atmanızı naçizane tavsiye ederim). Yukarıda bazı önlemlerden kısa kısa bahsetmeye çalıştık. Bu konuların bazılarına ileriki bölümlerde daha ayrıntılı değiniyor olacağız. Bölümün kapsamı gereği biraz daha özet şeklinde ilerledik. İhtiyaç duyulan kısımlar için hem sonraki bölümlerde hem de farklı okumalar yapmanız iyi olabilir.
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Bölümü birer ayet-i kerime ve hadis-i şerif ile bitirelim.
+
+
+ > "Ey iman edenler! Sabır ve namaz ile Allah’tan yardım dileyin. Şüphesiz Allah, sabredenlerle beraberdir." (Bakara Suresi, 2:153)
+
+> "Deveni bağla, sonra tevekkül et." (Tirmizî, Kıyamet 60)
 
