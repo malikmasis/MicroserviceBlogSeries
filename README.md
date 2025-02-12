@@ -34,7 +34,7 @@ Mikroservis konusu ile ilgili kendi adıma diyebileceğim en net şey, gerçekte
 
 8. **[Resiliency](#8-resiliency)**: Bir servise yapılan çağrıların belirli bir sebepten dolayı cevap vermemesi sonucu orada bağlantıyı keserek bütün sisteme yük binmesine engel olur. Belirli dönemlerde buradaki problem düzelip düzelmediğini kontrol eder, düzelmiş ise tekrar bağlantıya izin verir.
 
-9. **Backward Compatibility**: Eskiye yönelik servislerin çalışırlığını ele alır. Bunun için versiyonlama kullanılan genel çözümlerden biridir. Aksi halde yaptığınız radikal bir değişiklik (breaking change) burayı kullanan eski istemcileri olumsuz etkileyecektir.
+9. **[Backward Compatibility](#9-backward-compatibility)**: Eskiye yönelik servislerin çalışırlığını ele alır. Bunun için versiyonlama kullanılan genel çözümlerden biridir. Aksi halde yaptığınız radikal bir değişiklik (breaking change) burayı kullanan eski istemcileri olumsuz etkileyecektir.
 
 10. **Documenting Contracts**: İstemci ve sunucu arasında bir protokol, anlaşma diyebiliriz. Interface'ler ile yazılımda nasıl bazı konular için el sıkışıyorsak bunu da öyle anlayabiliriz desek yanlış ifade etmiş olmayız herhalde. Open Api gibi standartlarla bunları ele alabiliriz.
 
@@ -300,4 +300,37 @@ Content-based Routing: İsteğin türüne göre yönlendirme yapılır. Web veya
  > "Ey iman edenler! Sabır ve namaz ile Allah’tan yardım dileyin. Şüphesiz Allah, sabredenlerle beraberdir." (Bakara Suresi, 2:153)
 
 > "Deveni bağla, sonra tevekkül et." (Tirmizî, Kıyamet 60)
+
+### 9. Backward Compatibility
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Serinin dokuzuncu bölümünde Backward Compatibility (geriye uyumluluk) konusuna bakıyor olacağız. Geriye uyumluluk sadece mikroservis sistemlerde değil, monolit sistemlerde de önemli bir yere sahip bir kavramdır. Dış servisler veya sistemler tarafından kullanılan uçlarımızda bir değişiklik yaptığımızda önceki halini bozmayacak bir şekilde geliştirilmesi gerekiyor. Hazırsak başlayalım.
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Öncelikle konuyu kısaca monolit sistemler için ele alarak başlayalım. Bir modül veya sistemde kullanılan bir endpoint veya DTO birçok yer tarafından kullanılabilir, burada meydana gelen bir "breaking change" diğer tarafları da etkileyebilir. Bütün sistemi her zaman aynı anda güncellemek mümkün olmayacağından burada yapılan değişikliklerin geriye uyumlu olması lazım. Bununla birlikte dış bağımlılıklar ve istemcinin kullandığı noktalar da bu kapsama girer.
+    
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Yukarıda bahsedilen konular mikroservis sistemler için de geçerlidir. Ancak mikroservis sistemlerde birçok servis olacağı için bunların birbirleriyle konuşması diğer ekipleri de ilgilendireceği için yapılan geliştirme çok daha kritik olabilmektedir. Bununla birlikte monolit yapının tersine buradaki aksaklık belirli bir servisi etkilerken, monolit sistemde yapılan değişiklik tüm sistemi etkileyebilir. 
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Peki geri uyumluluk diyoruz, buna sebebiyet veren durumların "breaking change" olduğunu ifade ettik. Kısaca eskiden sisteme gelen bir istemci yapılan değişiklikten sonra sistemden beklediği cevabı alamıyordur. Parametre sayısının veya tipinin değişmesi, DTO'dan herhangi bir alanın silinmesi ve zorunlu hale getirilmesi buna örnek olarak gösterilebilir. Yapılan her değişiklik de "breaking change" manasına gelmez bunu da hatırlatmakta fayda var. Bunların olmaması için birkaç çözümü ele alalım.
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;API Versiyonlama, herhangi bir endpoint'te yapılan bir geliştirme "breaking change" (kırılganlığa) sebep oluyorsa endpoint'lerimizi değiştirmek yerine onları versiyonlayabiliriz. Sistemi tasarlarken buna uygun olarak geliştirmek gerekir.  Bunu yapmanın farklı yöntemleri olsa da önemli olan temel mantık olduğu için ayrıntılara girmiyoruz.
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Kontrakların iyi tasarlanması (DTO), yukarıda da berilttiğimiz gibi DTO'lardan herhangi bir alan silinmesi, bir alanın zorunlu hale getirilmesi buna sebebiyet verir. Buna çözüm olarak yeni alanların eklenirken varsayılan olarak değer atanması, zorunlu olmayan alanların eklenmesi ya da kullanılmayan alana "deprecated" demek doğru olan yöntemlerdendir.
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Tolerant Reader, istemci tarafından alınan bir önlemdir. Gelen veride beklediğinin dışında alanlar eklenmiş olsa da eski istemciler doğru bir şekilde çalışmaya devam edebilir.
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Feature Flag, yeni eklenen özellik (feature) hayata alındıktan sonra o özelliği kapatıp açılabilmesine denir. Yapılan testlerden dahi kaçsa ortaya çıkan sorun sonrası bu flag'ı kapatarak sistemin eskisi gibi çalışması hedeflenir.
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;A/B testleri, hayata geçirdiğimiz bir özelliği, bütün kullanıcılara/istemcilere açmak yerine öncelikle belirli bir gruba açmayı hedefler. Her şey yolunda gittiyse yavaş yavaş tüm herkese açılır. Bir aksilik olursa geri dönüş planları hayata alınır.
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Tüm bu çözümler kulağa hoş gelse de tahmin edeceğiniz üzere bunların da birlikte getirdiği maliyetler oluyor. Bunlardan bazılarını ele alacak olursak;
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Eski ve yeni sürümler nedeniyle test süreçleri ve buradaki maliyetler artmaktadır. Doğal olarak kodun kendisi de karmaşıklaşmaktadır, bunun da bakım maliyeti artmaktadır. Sürüm yönetimi de zorlaşmaktadır.Feature flag'ların bakımı yapılmadığı takdirde kodun okuması zorlaşmaktadır (Bunu birebir yaşıyoruz. Belirli aralıklarla kontrol etmekte fayda var. İkinci madde ile de direkt bağlı. Ayrıca testleri yaparken ff açık mı kapalı, test ve prod ortamları senkron mu gibi konuları da ihmal etmemek lazım.).
+    
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Özetle önerilen çözümlerin faydası olsa da bunları belirli bir standartta yaparak ve gerektiğinde bunlar refactor ederek veya kullanılmayan yapıları kaldırarak burada oluşabilecek maliyetleri de düşürmenin faydaları olacaktır. Ayrıca yukarıda da belirttiğimiz gibi "Deprecated" attribute, dokümanları güncel tutarak ve semantic versiyonlama yaparak oluşabilecek maliyetleri indirgeyebiliriz.
+    
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Bölümü birer ayet-i kerim ve hadis-i şerif ile bitirelim
+
+
+> "Onların işleri, aralarında şûra (danışma) iledir." (Şûrâ Suresi, 42:38)
+
+> "Akıllı kişi, nefsini kontrol eden ve ölümden sonrası için çalışandır. Aciz kişi ise, nefsinin hevasına uyan ve Allah’tan (hiçbir gayret göstermeden) temennilerde bulunandır."                                                                                 (Tirmizî, Kıyamet, 25; İbn Mâce, Zühd, 31)
 
