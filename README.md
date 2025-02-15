@@ -36,7 +36,7 @@ Mikroservis konusu ile ilgili kendi adıma diyebileceğim en net şey, gerçekte
 
 9. **[Backward Compatibility](#9-backward-compatibility)**: Eskiye yönelik servislerin çalışırlığını ele alır. Bunun için versiyonlama kullanılan genel çözümlerden biridir. Aksi halde yaptığınız radikal bir değişiklik (breaking change) burayı kullanan eski istemcileri olumsuz etkileyecektir.
 
-10. **Documenting Contracts**: İstemci ve sunucu arasında bir protokol, anlaşma diyebiliriz. Interface'ler ile yazılımda nasıl bazı konular için el sıkışıyorsak bunu da öyle anlayabiliriz desek yanlış ifade etmiş olmayız herhalde. Open Api gibi standartlarla bunları ele alabiliriz.
+10. **[Documenting Contracts](#10-documenting-contracts)**: İstemci ve sunucu arasında bir protokol, anlaşma diyebiliriz. Interface'ler ile yazılımda nasıl bazı konular için el sıkışıyorsak bunu da öyle anlayabiliriz desek yanlış ifade etmiş olmayız herhalde. Open Api gibi standartlarla bunları ele alabiliriz.
 
 11. **Centralized Logging**: İlk başta çok önemsenmese de servisler arttıkça hatalar oldukça loglamanın önemini çok daha iyi anlıyorsunuz. Özellikle debug yapmanın zor olduğu böyle bir ortamda bu çok daha kıymetli olmaktadır.
 
@@ -62,7 +62,7 @@ Ben bu yazıyı taslak olarak yazarken şu an hala Gazze'deki insanlar açlıkta
 
 ### 1. Bounded Context
 
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Özette de belirttiğimiz gibi bu işin kalbi bana göre sınırları doğru çizebilmek. Sınırları doğru ve net belirlediğimizde geriye kalan işler kolaylaşacaktır. Monolit yapılarda veritabanı tasarımının projedeki en önemli kısım olduğunu düşündüm hep. İyi bir veri tabanı iyi bir backend yazılımına, o da iyi bir arayüze ve günün sonunda iyi bir uygulama vesile olur. Mikroservis mimarisinde ise aynı şeyi "bounded context" için düşünüyorum. Hazırsak başlayalım.
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Özette de belirttiğimiz gibi bu işin kalbi bana göre sınırları doğru çizebilmek. Sınırları doğru ve net belirlediğimizde geriye kalan işler kolaylaşacaktır. Monolit yapılarda veritabanı tasarımının projedeki en önemli kısım olduğunu düşündüm hep. İyi bir veri tabanı iyi bir backend yazılımına, o da iyi bir arayüze ve günün sonunda iyi bir uygulama vesile olur. Mikroservis mimarisinde ise aynı şeyi "bounded context" için düşünüyorum.
 
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Konuya bir anı ve ardından gelen bir soru ile girmekte fayda olabilir. Girdiğim bir mülakatta konu DDD'ye gelmişti. Ben de projemi bu yaklaşıma uygun geliştirdiğimi söylemiştim. Buna karşılık mülakatı yapan kişi bana peki DDD sadece yazılımcı için olan bir konu mu demişti?
 
@@ -90,7 +90,7 @@ Ben bu yazıyı taslak olarak yazarken şu an hala Gazze'deki insanlar açlıkta
 
  ### 2. Async Messaging
  
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Serinin ikinci bölümünde asenkron iletişimi ele alacağız. Servisler arası iletişimde temelde iki yöntem var. Bu yöntemlerden biri senkron (rest api, grpc) ve diğeri asenkron olarak ele alabiliriz. Birbirilerine göre avantaj ve dezavantajları olsa da servislerin birbirine olan bağımlılıkları en aza indirgemek için asenkron iletişim bu işin temel parçalarından biri haline geliyor. Hazırsak başlayalım.
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Serinin ikinci bölümünde asenkron iletişimi ele alacağız. Servisler arası iletişimde temelde iki yöntem var. Bu yöntemlerden biri senkron (rest api, grpc) ve diğeri asenkron olarak ele alabiliriz. Birbirilerine göre avantaj ve dezavantajları olsa da servislerin birbirine olan bağımlılıkları en aza indirgemek için asenkron iletişim bu işin temel parçalarından biri haline geliyor.
 
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Bir mikroservis sistemi tasarımında mümkün mertebe servisleri birbirinden izole olmasını isteriz. Bunun sebeplerinden bir tanesi o servisle ilgili herhangi bir olumsuzlukta sistemin ayakta kalmaya devam etmesidir. Örneğin, kampanyalar servisiniz düştü ancak kullanıcı hala alış-verişini yapmaya devam edebilmeli. Kampanya servisi düştüğü için bütün sistemin çalışılmaz hale gelmesine gerek yoktur.
 
@@ -114,7 +114,7 @@ Ben bu yazıyı taslak olarak yazarken şu an hala Gazze'deki insanlar açlıkta
 
  ### 3. Composing Microservice
 
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Serinin üçüncü bölümünde "composing microservice" konusunu ele alacağız. Birden çok servisten gelen cevapları toplayarak yanıt olarak istemciye (client) geri döner. Mikroservisin bağımsızlık ilkesine ters olsa da iş modelinin isterlerine göre kaçınılmaz olabiliyor. Bu durum, genel tasarıma zarar verebileceğinden burayı tasarlamak ilerideki birbirine bağımlı servislerin oluşmasına engel olmak açısından çok önemlidir. Hazırsak detaylarına inelim.
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Serinin üçüncü bölümünde "composing microservice" konusunu ele alacağız. Birden çok servisten gelen cevapları toplayarak yanıt olarak istemciye (client) geri döner. Mikroservisin bağımsızlık ilkesine ters olsa da iş modelinin isterlerine göre kaçınılmaz olabiliyor. Bu durum, genel tasarıma zarar verebileceğinden burayı tasarlamak ilerideki birbirine bağımlı servislerin oluşmasına engel olmak açısından çok önemlidir.
 
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Genel itibariyle çok fazla servisimiz olduğunu varsayalım. Her birinin yaptığı işler belli, ancak gerçek hayattaki isterler tahmin edebileceğiniz üzere çok karmaşıklaşabiliyor. Bazen birden çok servisten bilgiyi toplayarak bir yanıt dönmemiz gerekiyor. Böyle durumlarda başvuracağımız yöntemlerden biri de bu servislerden gelen cevapları alarak toplu bir yanıt dönmek olacaktır. Bunun bazı yöntemleri var:
 
@@ -141,7 +141,7 @@ Ben bu yazıyı taslak olarak yazarken şu an hala Gazze'deki insanlar açlıkta
 
 ### 4. Achieving Data Consistency
 
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Serinin dördüncü bölümünde, dananın kuyruğunun koptuğu bir konuyu ele alacağız: Veri tutarlığı. Önce bu konu neden önemli, sağlanmadığında ne gibi problemler yaşanabilir, ardından monolit yapılarda bunu nasıl sağlıyoruz ve son olarak da mikroservislerde ne gibi zorluklar yaşanıyor ve buna sunulan çözümler nelerdir gibi konulara değinmeye çalışacağız. Hazırsak başlayalım.
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Serinin dördüncü bölümünde, dananın kuyruğunun koptuğu bir konuyu ele alacağız: Veri tutarlığı. Önce bu konu neden önemli, sağlanmadığında ne gibi problemler yaşanabilir, ardından monolit yapılarda bunu nasıl sağlıyoruz ve son olarak da mikroservislerde ne gibi zorluklar yaşanıyor ve buna sunulan çözümler nelerdir gibi konulara değinmeye çalışacağız.
 
 
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Veri tutarlığı konusu gerçekten çok geniş, bu konuyu iyi anlayabilmek için öncelikle ACID ve CAP konularını iyi anlamak gerekiyor. Buralardaki başlıklar nelerden bahsediyor veya herhangi bir veri tabanını tercih ettiğimizde nereden feragat ettiğimizi doğru anlamamız gerekiyor. Bu hem monolith yapılar için hem de mikroservis yapılar için geçerlidir. Temel mantık oturduktan sonra geriye kalan işler yöntem ve prensiplerdir.
@@ -175,7 +175,7 @@ Ben bu yazıyı taslak olarak yazarken şu an hala Gazze'deki insanlar açlıkta
 >"Kim bir işin başına geçirilirse, halk ona emanet edilmiş olur. O da ona karşı sorumludur." Sahih al-Buhari, Hadis 89
 
 ### 5. Centralizing Access
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Serinin beşinci bölümünde olan merkezi erişim konusuna başlıyoruz. Burada ele alacağımız 3 kavram olan gateway, reverse proxy ve load balancer konuları olacak. Hepsi gelen trafiği karşılayıp gerekli servislere yönlendiren yapılar olmasına rağmen birbirlerinden farklılaştığı noktalar mevcut. Ayrıca böyle bir kurgunun ne gibi bir işlevi var, ne tür avantajlar sağlar, hangi işlemleri burada yapmalıyız gibi konulara da değinmeye çalışacağız. Hazırsak başlayalım.
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Serinin beşinci bölümünde olan merkezi erişim konusuna başlıyoruz. Burada ele alacağımız 3 kavram olan gateway, reverse proxy ve load balancer konuları olacak. Hepsi gelen trafiği karşılayıp gerekli servislere yönlendiren yapılar olmasına rağmen birbirlerinden farklılaştığı noktalar mevcut. Ayrıca böyle bir kurgunun ne gibi bir işlevi var, ne tür avantajlar sağlar, hangi işlemleri burada yapmalıyız gibi konulara da değinmeye çalışacağız.
 
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Genel yapı itibariyle dışarıdan gelen isteklerin hepsini ilk karşılayan kale kapısı olarak düşünebilirsiniz. Bu kapılardan içeri girmeyen kimse kale içine de giremez. Öncelikle buralardan içeri giriş yapılmalı. İçeriye de rastgele gidilmiyor tabii ki. Gelen isteğin nereye gideceğini sorguluyor ve ona göre en uygun yere yönlendiriyor. Load balancer ile kullanılan bazı yönlendirme yöntemleri şunlardır:
 Round Robin: Sunuculara sırasıyla yönlendirme yapılır.
@@ -216,7 +216,7 @@ Content-based Routing: İsteğin türüne göre yönlendirme yapılır. Web veya
 > "Birinizin diğerini yönlendirmesi, ona yardımcı olması, doğru yolu göstermesi, onunla işbirliği yapması hayırlıdır." (Buhârî, İlim, 30)
 
 ### 6. Separated Databases
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Bu bölümde mikroservis sistemlerde her servisin kendine ait veri tabanın olması konusunu ele alacağız. Bununla birlikte genel olarak veri tabanı seçimleri, veri senkronizasyonu ve çoklaması, ayrı veri tabanlarını yönetmedeki zorluklar ve bunlara yönelik çözümler hakkında konuşmaya çalışacağız. Hazırsak başlayalım.
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Bu bölümde mikroservis sistemlerde her servisin kendine ait veri tabanın olması konusunu ele alacağız. Bununla birlikte genel olarak veri tabanı seçimleri, veri senkronizasyonu ve çoklaması, ayrı veri tabanlarını yönetmedeki zorluklar ve bunlara yönelik çözümler hakkında konuşmaya çalışacağız.
 
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Daha önceki bölümlerde de belirttiğimiz gibi, iyi bir veri tabanı tasarımı iyi bir projeyi oluşturmanın temel noktalarından bir tanesidir. İyi bir veri tabanı tasarımı ve belki de ondan önce doğru bir veri tabanı seçimi bu konuyu daha da önemli hale getirmektedir. Burada sadece veri tabanı ürünlerinden bahsetmiyorum, SQL ve NoSQL gibi veri tabanı türlerinin seçiminden de bahsediyorum.
     
@@ -245,7 +245,7 @@ Content-based Routing: İsteğin türüne göre yönlendirme yapılır. Web veya
 > "Müslüman, diğer Müslümanların ellerinden ve dillerinden zarar görmediği kişidir."      (Sahih-i Buhari, Kitâbü'l-İman, Hadis No: 10/457)   
 
 ### 7. Arch API-based 
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Serinin yedinci bölümünde API tabanlı mimariyi ele alıyor olacağız. Önceki bölümlerde asenkron iletişimden, veri tutarlığının zorluğundan, ayrı veri tabanlarının kullanılmasından ve burada ortaya çıkan problemlerde ve hangi durumlarda hangi yapıların kullanılması daha uygun olur gibi konulardan bahsetmiştik. Bugün ise asenkron iletişimde API tabanlı iletişim var. Çeşitleri nelerdir, hangi durumalarda hangisi kullanılır, ne gibi avantaj ve dezavatajları var gibi konulara değinmeye çalışacağız. Hazırsak başlayalım.
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Serinin yedinci bölümünde API tabanlı mimariyi ele alıyor olacağız. Önceki bölümlerde asenkron iletişimden, veri tutarlığının zorluğundan, ayrı veri tabanlarının kullanılmasından ve burada ortaya çıkan problemlerde ve hangi durumlarda hangi yapıların kullanılması daha uygun olur gibi konulardan bahsetmiştik. Bugün ise asenkron iletişimde API tabanlı iletişim var. Çeşitleri nelerdir, hangi durumalarda hangisi kullanılır, ne gibi avantaj ve dezavatajları var gibi konulara değinmeye çalışacağız.
 
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;API tabanlı sistemler temel manada servislerin bağımsız olarak tasarlanıp gerektiği durumlarda birbirleriyle iletişimde olmayı hedefler. Bu bağımsızlık servis bazlı ölçeklenebilirlik (her servisin getirdiği yüke göre büyüp küçülmesi), bir servisin bir sorumluluğu olması (single responsibility), teknoloji seçimi gibi avantajlar sağlar. Önceki bölümlerde bahsettiğimiz bu servislerin önüne de zorunlu olmasa da genel olarak bir API Gateway tarzında bir yapı kurulur. 
     
@@ -268,7 +268,7 @@ Content-based Routing: İsteğin türüne göre yönlendirme yapılır. Web veya
 > "Her birinizin dili, kalbinden daha öncedir. Çünkü kişi dilinin ne söylediğine dikkat etmezse, kalbi o söze uymayabilir." (Tirmizi, Birr, 25)
 
 ### 8. Resiliency
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Serinin sekizinci bölümüne hoş geldiniz. Önceki bölümlerde şimdiye kadar genel itibariyle veri üzerine daha çok yoğunlaştık, ancak bu bölümde herhangi bir sebepten dolayı cevap vermeyen servislerle ilgili ne yapabileceğimizi konuşacağız. Bu kavrama dayanıklılık (resiliency) diyoruz. Peki sistemlerin dayanıklı olabilmesi için neler yapabiliriz? Hazırsak başlayalım.
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Serinin sekizinci bölümüne hoş geldiniz. Önceki bölümlerde şimdiye kadar genel itibariyle veri üzerine daha çok yoğunlaştık, ancak bu bölümde herhangi bir sebepten dolayı cevap vermeyen servislerle ilgili ne yapabileceğimizi konuşacağız. Bu kavrama dayanıklılık (resiliency) diyoruz. Peki sistemlerin dayanıklı olabilmesi için neler yapabiliriz?
 
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Dayanıklık denilince akla her ne kadar devre kesici (Circuit Breaker) gelmiş de olsa sistemi daha dayanıklo kılmak için birden fazla yöntem mevcut. Bunlardan kısaca bahsedip ne gibi sorunlara çözüm aradıklarını ele almaya çalışacağız.
     
@@ -303,7 +303,7 @@ Content-based Routing: İsteğin türüne göre yönlendirme yapılır. Web veya
 
 ### 9. Backward Compatibility
 
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Serinin dokuzuncu bölümünde Backward Compatibility (geriye uyumluluk) konusuna bakıyor olacağız. Geriye uyumluluk sadece mikroservis sistemlerde değil, monolit sistemlerde de önemli bir yere sahip bir kavramdır. Dış servisler veya sistemler tarafından kullanılan uçlarımızda bir değişiklik yaptığımızda önceki halini bozmayacak bir şekilde geliştirilmesi gerekiyor. Hazırsak başlayalım.
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Serinin dokuzuncu bölümünde Backward Compatibility (geriye uyumluluk) konusuna bakıyor olacağız. Geriye uyumluluk sadece mikroservis sistemlerde değil, monolit sistemlerde de önemli bir yere sahip bir kavramdır. Dış servisler veya sistemler tarafından kullanılan uçlarımızda bir değişiklik yaptığımızda önceki halini bozmayacak bir şekilde geliştirilmesi gerekiyor.
 
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Öncelikle konuyu kısaca monolit sistemler için ele alarak başlayalım. Bir modül veya sistemde kullanılan bir endpoint veya DTO birçok yer tarafından kullanılabilir, burada meydana gelen bir "breaking change" diğer tarafları da etkileyebilir. Bütün sistemi her zaman aynı anda güncellemek mümkün olmayacağından burada yapılan değişikliklerin geriye uyumlu olması lazım. Bununla birlikte dış bağımlılıklar ve istemcinin kullandığı noktalar da bu kapsama girer.
     
@@ -332,5 +332,32 @@ Content-based Routing: İsteğin türüne göre yönlendirme yapılır. Web veya
 
 > "Onların işleri, aralarında şûra (danışma) iledir." (Şûrâ Suresi, 42:38)
 
-> "Akıllı kişi, nefsini kontrol eden ve ölümden sonrası için çalışandır. Aciz kişi ise, nefsinin hevasına uyan ve Allah’tan (hiçbir gayret göstermeden) temennilerde bulunandır."                                                                                 (Tirmizî, Kıyamet, 25; İbn Mâce, Zühd, 31)
+> "Akıllı kişi, nefsini kontrol eden ve ölümden sonrası için çalışandır. Aciz kişi ise, nefsinin hevasına uyan ve Allah’tan (hiçbir gayret göstermeden) temennilerde bulunandır." (Tirmizî, Kıyamet, 25; İbn Mâce, Zühd, 31)
+### 10. Documenting Contracts
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Serinin onuncu bölümünde dokümantasyon ve uri tasarımı konularını ele alacağız. Diğer konulara oranla az önemli gibi gözükse de büyüyen projelerde bu konu beklediğimizden çok daha önemli hale gelmektedir. Özellikle farklı takımların sürekli senkron veya asenkron bir iletişim sürdürmesi yerine bu konuya eğilmek çok daha kıymetli olacaktır. Ayrıca sonradan projelere katılacak olan arkadaşlara da can simidi olabilir.
 
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Bugünkü konumuz da diğer konular gibi mikroservise has bir konu değildir, ancak yapı büyüdükçe bu yapılan işlerin önemi daha iyi anlaşılacaktır. Belirli bir standardın dışına çıkıldı mı bunları yönetmek oldukça zorlaşıyor. Ekipler arası geçişler, değişimler olsa da aslında bütün projelerin tek bir ekipten çıkıyormuşçasına düzenli görünmesi o işteki başarımızı da artırmaktadır.
+    
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;İyi bir Uri tasarımında öncelikle tutarlılık olmalıdır. Uçlarda nasıl bir isimlendirme takip edeceğiniz ya da fiiller ile başlamak yerine kaynakların isimlerini baz alacağınız gibi kurallarınızın olması önemli. Bahsedilen konuda "best practice"ler zaten mevcut. Onları takip etmekte de fayda var. Bir önceki yazımızda bahsettiğimiz konulardan biri olan versiyonlama yine çok önemli bir nokta. HTTP metodlarını doğru şekillerde kullanmak da önemli noktalardan biridir.
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;API spesifikasyonu dediğimiz API uçları dokümante etmek çok önemli. Open API bunları belirli bir standarda getirip Swagger gibi araçlarla bunu hızlıca çözebiliriz. Neredeyse tüm projelerin vazgeçilmezi olması ise mutluluk verici. Ayrıca sadece Rest api için değil, GraphQL ve hatta gRPC için farklı araçlarla bunları bize sağlayabiliyor.
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Önceki bölümde ele aldığımız "back compatibility" ve CDC testleri ile önceki versiyonlara ait uçları bozmamak, istemcilerin doğru bir şekilde iletişimlerine devam etmeleri açısından önemlidir. 
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Dokümanları yazmak çoğu geliştiricinin ihmal ettiği ve belki de sıkıldığı bir şey olsa da daha da zoru maalesef o dokümanı güncel tutabilmektir. Güncel olmayan doküman bazen olmayan dokümandan daha can sıkıcı olabiliyor. Çünkü bizler onu doğru kabul edip bazı yorumlarda veya çıkarımlarda bulunarak yanlışlığa sebebiyet verebiliriz. Geliştirici yazdığı kodun testini, dokümantasyonunu yazmadan ve onu canlıya göndermeden işinin bitmediğini sürekli hatrında bulundurmalıdır.
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Bir önemli nokta da yazdığımız dokümanları yazıyor olmak için yazmamak. Eğer böyle yapıyorsak belki de hiç yazmamak daha iyidir mi demeliyiz yoksa kötü de olsa bir yerden başlayıp onu alışkanlık haline mi getirmeliyiz kısmını sizin yorumlarınıza bırakıp iyi dokümanın bazı özelliklerine kısaca göz atalım.
+
+* Tüm uçlar detaylı olarak alınmalı, gönderilen parametreler ve cevap anlatılmalıdır.
+* Uçların hangi durumlarda hangi status kodlarını da döneceği önemlidir.
+* Varsa hata kodları ve bu kodlarının ne anlama geldiği ve hangi koşullarda karşılaşıldığı belirtilmeli.
+* Auth sistemlerinin gereksinimleri belirtilmelidir.
+* Belirli isteklerden sonra rate limit koşulları varsa bunları da belirtmek iyi olur.
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Özetle iyi ve tutarlı bir dokümantasyon sadece geliştiricilerin değil, tüm ekibin en önemli işlerinden biri olmalıdır. Bunu şirketin veya en azından ekibin kültürü haline getirdiğinizde ne kadar başarılı işler ortaya çıkardığınızı ileride çok daha net bir şekilde kendiniz de göreceksiniz. 
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Bölümü birer ayet-i kerim ve hadis-i şerif ile bitirelim.
+
+> “Hiç bilenlerle bilmeyenler bir olur mu? Ancak akıl sahipleri öğüt alır.” (Zümer Suresi, 9. Ayet)
+
+> "Bir kimse ilim öğrenmek için bir yola girerse, Allah ona cennete giden yolu kolaylaştırır." Davud, İlim, 1; Tirmizi, İlim, 2)
