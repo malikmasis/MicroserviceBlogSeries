@@ -38,7 +38,7 @@ Mikroservis konusu ile ilgili kendi adıma diyebileceğim en net şey, gerçekte
 
 10. **[Documenting Contracts](#10-documenting-contracts)**: İstemci ve sunucu arasında bir protokol, anlaşma diyebiliriz. Interface'ler ile yazılımda nasıl bazı konular için el sıkışıyorsak bunu da öyle anlayabiliriz desek yanlış ifade etmiş olmayız herhalde. Open Api gibi standartlarla bunları ele alabiliriz.
 
-11. **Centralized Logging**: İlk başta çok önemsenmese de servisler arttıkça hatalar oldukça loglamanın önemini çok daha iyi anlıyorsunuz. Özellikle debug yapmanın zor olduğu böyle bir ortamda bu çok daha kıymetli olmaktadır.
+11. **[Centralized Logging](#11-centralized-logging )**: İlk başta çok önemsenmese de servisler arttıkça hatalar oldukça loglamanın önemini çok daha iyi anlıyorsunuz. Özellikle debug yapmanın zor olduğu böyle bir ortamda bu çok daha kıymetli olmaktadır.
 
 12. **Cloud Based Infrastructure**: Bu başlık itibariyle biraz daha devops tarafına girişmeye başlıyoruz. Fiziksel sunucular yerine buluttaki hizmetleri ele almayı önerir. Birçok güzelliği olsa da elinizi verdiğinizde kolunuzu kaptırma ihtimaliniz de var :)
 
@@ -333,6 +333,7 @@ Content-based Routing: İsteğin türüne göre yönlendirme yapılır. Web veya
 > "Onların işleri, aralarında şûra (danışma) iledir." (Şûrâ Suresi, 42:38)
 
 > "Akıllı kişi, nefsini kontrol eden ve ölümden sonrası için çalışandır. Aciz kişi ise, nefsinin hevasına uyan ve Allah’tan (hiçbir gayret göstermeden) temennilerde bulunandır." (Tirmizî, Kıyamet, 25; İbn Mâce, Zühd, 31)
+
 ### 10. Documenting Contracts
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Serinin onuncu bölümünde dokümantasyon ve uri tasarımı konularını ele alacağız. Diğer konulara oranla az önemli gibi gözükse de büyüyen projelerde bu konu beklediğimizden çok daha önemli hale gelmektedir. Özellikle farklı takımların sürekli senkron veya asenkron bir iletişim sürdürmesi yerine bu konuya eğilmek çok daha kıymetli olacaktır. Ayrıca sonradan projelere katılacak olan arkadaşlara da can simidi olabilir.
 
@@ -361,3 +362,32 @@ Content-based Routing: İsteğin türüne göre yönlendirme yapılır. Web veya
 > “Hiç bilenlerle bilmeyenler bir olur mu? Ancak akıl sahipleri öğüt alır.” (Zümer Suresi, 9. Ayet)
 
 > "Bir kimse ilim öğrenmek için bir yola girerse, Allah ona cennete giden yolu kolaylaştırır." Davud, İlim, 1; Tirmizi, İlim, 2)
+
+### 11. Centralized Logging 
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Serinin on birinci bölümünde loglama konusunu ele alacağız. Loglama küçümsediğimiz ama başımız belaya girdiğinde kıymetini anlamaya başladığımız can simidi bir konu. Monolit sistemlerde de önemlidir ancak log yazılması, logu takip etmesi ve gerektiğinde debug (iyi developer debug yapar, daha iyi developer log okur) yapması daha kolaydır. Ancak sistem büyüdükçe bu işlemi yapmak dahi bir soruna dönüşebiliyor. Özellikle servisler arası istekler gidip geliyorsa bunu takip etmek daha da zorlaşıyor. Bunlar için ne gibi çözümler var merak ediyorsak buyurun başlayalım.
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Monolit sistemlerde logları daha kolay bir şekilde tutabiliyorken, mikroservis yapıda bütün servislerden toplayıp bunu merkezileştirmek neredeyse bir zorunluluk. Aksi halde bu işi yönetmek çok zorlaşıyor, hatta imkansızlaşır. O yüzden de logları merkezileştirmek lazım. Merkezileştirilen logları görüntülemek ve aradığını bulmak da ayrı bir zorluk tabii ki :) Mantık bu şekilde olsa da bunu yapmanın farklı şekilleri var. Bunu yapmanın en yaygın yöntemlerinden biri ELK( Elastic, Logstash ve Kibana).
+ - Elastic Search, toplanan verileri depolayan ve arama yapabildiğimiz bir araçtır. Aramayı hızlandırmak için indeksler kullanır. Kendi içinde oldukça geniş bir dünyası var.
+ - Logstash, servislerden gelen logları uygun formata getirerek Elastic'e iletir.
+- Kibana, toplanan verilerin görselleştirilmesini sağlar.
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Önemli olan bir diğer konu ise tracing dediğimiz izleme olayıdır. Yukarıda da bahsettiğimiz servisler arası devam eden isteklerin takibi oldukça önemlidir. Hata veya problem nereden geldi, nereye gitti, nerede ne olduğu kısımları çok önemli oluyor. Özellikle bu tarz durumlarda debug yapmak da oldukça zordur, ki aynı durumu tekrarlamak da her zaman mümkün olmayabilir. Önceki yazımızda da bahsettiğimiz OpenTelemetry gibi araçlar var. Bunun için bir araç kullanmak istemezseniz veya özelleştirme gibi bir ihtiyacınız olursa "CorrelationID" konusunu hayatınıza almanız gerekecektir. OpenTelemetry gibi araçlar bunu sizin yerinize yapar.
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Mikroservis sistemlerde log seviyesi gibi bir konu bile çok önemli hale gelmektedir. Piyasada iyi bilinen bir şirket için "assignment" yapmıştım, bana logun tipiyle ilgili bir soru sorduklarında, kendi kendime, kocaman bir proje yapmışız, üzerine hiç düşünmediğim log tipini mi soruyorlar demiştim. Büyük sistemlerde daha aktif çalışmaya başlayınca ne kadar haklı olduklarını daha net gördüm. Yoğun istek alan sistemlerde her şeyi logladığınızda veya uygun olmayan tiplerle logladığınızda bu da sizin başınıza iş açabiliyor. Bulmak istediğiniz log için çırpınıp durabiliyorsunuz. Bu konuya da dikkat etmekte fayda var.
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Önemli konulardan biri de logların yapısal olarak tutulması. Json yapısında olması önemli bir avantaj sağlayacaktır. Hem sorgulama yaparken hem parçalarken hem de analiz ederken işleri kolaylaştırmaktadır. Bunlar artık neredeyse varsayılan olarak gelen çözümler olsa da hatırlatmakta fayda var.
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Logların saklama süreleri bile önemli olabilmektedir. Monolit servislerde yıllarca saklanan loglara bile denk gelmiştim, ama mikroservis sistemlerde bunların hepsi maliyet ve logların saklanma süreleri olmalıdır. En azından kritik olmayan noktaların saklanma süresini kısa tutmak, belki de çok kritik olan logların belirli bir süre sonra arşivlemek bile çözüm olabilir ama mümkün ise bunları bir standarta oturtmak güzel olur. Özellikle IoT sistemlerde cihazlardan gelen istek ve cevapları logluyorsanız bunlar çok kısa sürelerde çok büyük rakamlara ulaşabilmektedir. 
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Loglama başlı başlına kritik bir konu ancak özellikle tekrar etmekte (repro) zorlanacağınız konularda elini ayağınız oluyor. Bizim architect olan abiye (Gökhan Demir) herhangi bir soru sorduğumuzda "loglar ne diyor" cümlesi benim bu konuya olan bakış açımı ciddi manada değiştirdi. Arkadaşlar da bana bir şey sorduğunda veya ben kendim bir problemle karşılaştığımda varsayılan olarak soruyorum. Çünkü elinizde log yoksa konuşacaklarınız varsayımdan öteye geçmeyebilir. Öncelikle logla, hatadan emin ol sonra da çözüm üzerine çalış bizim temel prensimiz olmalı.
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Özetle basit gibi görünen bazı konular bile mikroservislerle çalışmaya başladıkça ne kadar zor olduğunu daha net görüyorsunuz. Yazdığımız bir kod parçasıyla ilgili bir problem yaşandığında onunla ilgili loglara baktığımda bir şeyler anlayabiliyorsam veya en azından problemi saptayabiliyorsam doğru yolda olduğumuzun göstergesidir.
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Not: Şu şaheser [yazıyı](https://medium.com/bili%C5%9Fim-hareketi/da%C4%9F%C4%B1t%C4%B1k-uygulamalar-d%C3%BCnyas%C4%B1nda-i%CC%87zleme-merkezi-log-sistemi-ve-i%CC%87z-s%C3%BCrme-8e62c138023b) okumanızı naçizane tavsiye ederim.
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Yazıyı birer ayet-i kerim ve hadis-i şerif ile bitirelim.
+
+
+> "Kim zerre miktarı hayır işlerse onu görür. Kim de zerre miktarı şer işlerse onu görür." (Zilzâl Suresi, 7-8. Ayetler)
+
+> "İlim yazıyla kayıt altına alınır." (Darimî, Mukaddime, 42)
