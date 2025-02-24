@@ -40,7 +40,7 @@ Mikroservis konusu ile ilgili kendi adıma diyebileceğim en net şey, gerçekte
 
 11. **[Centralized Logging](#11-centralized-logging )**: İlk başta çok önemsenmese de servisler arttıkça hatalar oldukça loglamanın önemini çok daha iyi anlıyorsunuz. Özellikle debug yapmanın zor olduğu böyle bir ortamda bu çok daha kıymetli olmaktadır.
 
-12. **Cloud Based Infrastructure**: Bu başlık itibariyle biraz daha devops tarafına girişmeye başlıyoruz. Fiziksel sunucular yerine buluttaki hizmetleri ele almayı önerir. Birçok güzelliği olsa da elinizi verdiğinizde kolunuzu kaptırma ihtimaliniz de var :)
+12. **[Cloud Based Infrastructure](#12-cloud-based-infrastructure)**: Bu başlık itibariyle biraz daha devops tarafına girişmeye başlıyoruz. Fiziksel sunucular yerine buluttaki hizmetleri ele almayı önerir. Birçok güzelliği olsa da elinizi verdiğinizde kolunuzu kaptırma ihtimaliniz de var :)
 
 13. **Deployment Automation**: Bu işe girişmeyi düşünüyorsanız manuel deployment'i hayatınızdan çıkarmış olmanız gerekiyor. Servisleriniz her birinin otomatik olarak sunuculara gitmesi gerekmektedir. Hatta gün içinde istediğiniz anda bu işi de yapabiliyor olmalısınız.
 
@@ -391,3 +391,34 @@ Content-based Routing: İsteğin türüne göre yönlendirme yapılır. Web veya
 > "Kim zerre miktarı hayır işlerse onu görür. Kim de zerre miktarı şer işlerse onu görür." (Zilzâl Suresi, 7-8. Ayetler)
 
 > "İlim yazıyla kayıt altına alınır." (Darimî, Mukaddime, 42)
+
+### 12. Cloud-Based Infrastructure
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Serinin on ikinci bölümünde bulut tabanlı sistemleri konuşuyor olacağız. Bu yazıyla birlikte biraz daha devops konuları hakkında konuşmaya başlıyor olacağız. Mikroservis sistemlerde platform/devops ekibiniz olmadan bu işlerle uğraşmak zor/yorucu olabilir. Monolit sistemlerde bu işleri nasıl yapıyorduk da neden şimdi böyle bir ihtiyacımız var? Hazırsanız cevap bulmaya çalışalım.
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Her sistemde olduğu gibi monolit sistemlerde de canlıya çıkmak çok stresli bir durum, hatta mikroservisten daha stresli bir durum olduğunu düşünüyorum. Çünkü tek bir proje var ve bir hata bütün projenin patlamasına sebebiyet verebilir. Böyle bir durumda da geriye dönmek (rollback) gerekir ve bunun da kendisine göre elbette maliyetleri oluyor. 
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Her ne kadar tüm sistemi etkileme açısından çok daha sancılı olsa da bir projeyi canlıya almak birçok servisi canlıya almaktan elbette daha kolaydır. Tabi bunu nasıl yaptığınıza göre de değişir. Eğer projeleriniz IIS veya kendi sunucularınız üzerinde manuel olarak deploy ediyorsanız bu süreç hata yapmaya çok açık ve maalesef bunu yapan hala çok şirket var. Bu işler tabii ki ihtiyaca göre değişir ama en azından bu süreci otomatize etmek gerekir diye düşünüyorum.
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Mikroservis sistemlerde yine aynı yöntem kullanılamaz mı? Tabii ki kullanılabilir ama çok yorucu ve yönetmesi imkansız bir duruma dönüşebilir. Özellikle servisler arttıkça buradaki ihtiyaçlar artacak, servislerin kolayca ölçeklenmesi ihtiyacı olacak, bir problem olduğunda çok hızlı bir şekilde geri alınması gerekecek veya geçişlerde kesintinin minimum olması gibi durumlar ortaya çıkıyor.
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Bulut tabanlı sistemler, bu soruların birçoğunu bizim yerimize çözüyor. Birçok farklı hizmet ve destekleri oluyor. Yaptığımız işler oldukça kolaylaşıyor, ama her şey gibi bunun da bir maliyeti var. Her ne kadar "kullandığın kadar öde" ile yola çıkılsa da kısa vadede faturalar beklediğinizden fazla gelebilir. Bu tarz durumlarda ya danışmanlık alınması gerekiyor ya da buna bakan bir ekibiniz olması kaçınılmaz oluyor. Bunlar da işin duygusal boyutu ama her zaman dediğimiz gibi biraz ihtiyaç meselesi...
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Bulut tabanlı sistemleri daha etkili kullanmak için container (en bilinen aracı Docker) ve orkestrasyon (en bilinen aracı kubernetes) konularından da bahsetmememk olmaz. Sektörün standardı haline gelmiş bu araçlar sayesinde Docker ile uygulamaların taşınabilirliği sağlanırken, k8s ile container'lerin ölçeklenmesi ve yönetimi sağlanır. 
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Buralar gerçekten derya deniz, ben de devops kaynaklı biri olmadığım için bu konulara bir devopsu kadar hakim olmasam da son dönemlerde hem AWS hem GCP hem de Huwaei ile çalışan ekiplerde ayrı ayrı geliştirmeler yapıp aşina oldum. Buradaki rahatlıklara şahit olduğumuz kadar farklı konulardaki sıkıntılara, yüksek gelen faturalara ve bunlara harcanan mesailere de elbette denk geliyoruz.
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Bulut bilişimlerinin kendine ait birden fazla kategorisi var. Belki birkaçını duymuşsunuzdur, ancak biz yine de kısaca bir açıklayalım.
+![As a Service](Images/as-service.png)
+
+- IaaS (Infra as a Service): Alt yapının bir hizmet olarak sunulması. Buradaki bütün sorumluluk sizde oluyor. Daha esnek ve kontrol daha fazla sizde oluyor, ancak yönetim maliyeti de size kalıyor. Büyük sistemler için daha uygun fiyatlı ve tercih edilebilir.
+- Paas (Platform as a Service): Platform hizmetinin sunulması. Siz istediğiniz özellikleri belirtiyorsunuz, gerisine çok karışmıyorsunuz. Yönetimi ve bakımı kolay, ancak maliyeti küçük ve orta boyutlu sistemlerde daha kullanışlı olabilir.
+- FaaS (Function as a Service): Platformun bir tık ötesi :) Siz fonksiyonunuzu yazıyorsunuz, etliye sütlüye karışmıyorsunuz. İleride buralar değerlenecek deniliyor.
+- BaaS (Backend as a Service), DaaS (Data as a Service), CaaS (Container as a Service), SaaS (Software as a Service) gibi farklı farklı kategoriler de mevcut. Her birinin kendine göre kullanım alanları, avantaj ve dezavantajları var. Şuraya(üstteki resim de aynı siteden) göz atmakta fayda var.
+    Yukarıdaki resmi dikkatli incelediğimizde aslında birçok soruya da cevap almış oluyoruz. Ekibin, projenin, isterlerin ihtiyacına göre bizler mi bu işi yönetmeliyiz yoksa araçlara mı devretmeliyiz kararını en doğru şekilde vermekte fayda olabilir.
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Özetle monolit sistemlerde bazı konuları kendiniz yönetseniz bile mikroservis tabanlı projelerde, bunu yapmak çok da mümkün değil. Görünen de kontrolü yavaş yavaş araçlara verdiğimiz. Şahsi fikrim de bunun daha mantıklı olduğu yönde. Asıl işimize odaklanmak ve her iş için tekerliği yeniden icat etmemek daha mantıklı gibi duruyor.
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Bölümü birer ayet-i kerim ve hadis-i şerif ile bitirelim.
+> "Şüphesiz Allah, size emanetleri ehline vermenizi ve insanlar arasında hükmettiğinizde adaletle hükmetmenizi emrediyor." (Nisa Suresi, 4:58) 
+> "Kolaylaştırınız, zorlaştırmayınız; müjdeleyiniz, nefret ettirmeyiniz."(Buhari, İlim, 11; Müslim, Cihad ve Siyer, 6)
