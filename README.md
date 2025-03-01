@@ -42,7 +42,7 @@ Mikroservis konusu ile ilgili kendi adıma diyebileceğim en net şey, gerçekte
 
 12. **[Cloud Based Infrastructure](#12-cloud-based-infrastructure)**: Bu başlık itibariyle biraz daha devops tarafına girişmeye başlıyoruz. Fiziksel sunucular yerine buluttaki hizmetleri ele almayı önerir. Birçok güzelliği olsa da elinizi verdiğinizde kolunuzu kaptırma ihtimaliniz de var :)
 
-13. **Deployment Automation**: Bu işe girişmeyi düşünüyorsanız manuel deployment'i hayatınızdan çıkarmış olmanız gerekiyor. Servisleriniz her birinin otomatik olarak sunuculara gitmesi gerekmektedir. Hatta gün içinde istediğiniz anda bu işi de yapabiliyor olmalısınız.
+13. **[Deployment Automation](#13-deployment-automation)**: Bu işe girişmeyi düşünüyorsanız manuel deployment'i hayatınızdan çıkarmış olmanız gerekiyor. Servisleriniz her birinin otomatik olarak sunuculara gitmesi gerekmektedir. Hatta gün içinde istediğiniz anda bu işi de yapabiliyor olmalısınız.
 
 14. **Configuration Management**: Dev test prod gibi farklı ortamlarınızın olması gerekir. Bu aslında monolit yapılarda da olan bir konu ancak bazen gün içinde birden fazla deployment hedeflenen sistemlerde olmazsa olmaz durumuna dönüşüyor.
 
@@ -422,3 +422,28 @@ Content-based Routing: İsteğin türüne göre yönlendirme yapılır. Web veya
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Bölümü birer ayet-i kerim ve hadis-i şerif ile bitirelim.
 > "Şüphesiz Allah, size emanetleri ehline vermenizi ve insanlar arasında hükmettiğinizde adaletle hükmetmenizi emrediyor." (Nisa Suresi, 4:58) 
 > "Kolaylaştırınız, zorlaştırmayınız; müjdeleyiniz, nefret ettirmeyiniz."(Buhari, İlim, 11; Müslim, Cihad ve Siyer, 6)
+
+### 13. Deployment Automation
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Serinin on üçüncü bölümünde otomatik deployment süreçlerinden bahsetmeye çalışacağız. Önceki bölümde de bu konuya ufaktan değinmiştik. Şimdi ise daha detaylı bakmayı deneyeceğiz. Monolit sistemlerde olursa güzel olur dediğimiz yapı, mikroservis sistemlerde bu süreç zorunluluk haline geliyor. Mikroservis mimarisinin avantajlarından biri de gün içinde sık sık ve küçük paketler halinde canlıya çıkabilmektedir. Bunu yapabilmeniz için de bu süreçler kaçınılmaz oluyor. Hazırsak başlayalım.
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Monolit uygulamalarda manuel deployment zor olur diye belirtmiştik, bunu yapmanın farklı şekilleri var. IIS üzerinden dll kopyalarak yapan da var, FTP ile dosya atan da var, bu iş zor oluyor diyerek otomatik deployment (prod ortam için tetikleyerek olabilir, çünkü monolit yapı tek bir commit ile çalışmaz hale gelebilir) yapan da oluyor. Ancak mikroservis dünyasında bu bir seçenek olmaktan çıkıp zorunluluk haline gelmektedir.
+    Konunun temelini CI (Continuous Integration) ve CD (Continuous Deployment/Delivery) süreçleri  oluşturur. Zaman zaman birbirlerine de karıştırıldıkları da oluyor. Yukarıda bahsettiğimiz kodun sık aralıklarla sürüm kontrol (Git gibi) versiyonlama sistemlerine gönderilmesine denilirken, CD ise bu kodun her zaman deploy edilmeye hazır bulunmasına denir.
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Bu sürecin bize ne gibi faydaları olur derseniz, kodu sık sık canlıya göndermek olabilecek problemlerin saptamasını hızlandırır. Ekipler arası kod entegrasyonu karmaşıklığı azalır. Testleriniz de varsa gönderilen kodu kontrol ettiği için kod kalitesini artırır. Bunların sağladığı yararlarla birlikte kod her zaman deploy edilmeye hazır bir halde olur. Geliştirilen işler hızlı bir şekilde canlıya çıkarak müşteriyi de memnun etmiş olursunuz, kendinizi de memnun etmiş olursunuz (sizleri bilmem ama yazdığım bir kod farklı sebeplerden bloklanıp uzun süre bekleyip canlıya gitmediğinde stres oluyorum :) )...
+    
+![https://www.turing.com/kb/top-cicd-tools-you-should-learn-in-2022](Images/as-service.png)
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Peki bunları nasıl ayarlarız derseniz ilk akla gelen araç Jenkins olur herhalde. Açık kaynaklı, çok esnek her türlü taklayı atabileceğiniz bir araç, ancak konfigürasyon, yapılandırma gibi kısımları öğrenme açısından zor olabilir. Bununla ilgilenen bir ekibiniz yoksa bunu kullanmak yorabilir.
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Gitlab CI/CD ve Github Actions yine bu konularda sizlere yardımcı olan araçlardan. Bizler projeleri Github üzerinde tuttuğumuz için bizim için Github Actions kullanmak oldukça pratik bir durum oldu. Kendiniz de yeni bir akış oluşturmak istediğinizde size bir template sunuyor ve kolaylıkla konfigürasyonları yapılandırabiliyorsunuz. Daha sonra otomatik veya elle tetikleme veya farklı ortamlar için farklı süreçleri ele alabiliyorsunuz. Bunun dezavantajı ise yeterince esnek olmayabilir ve daha çok kendi repolarındaki projelere yöneliktir.
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Circle CI, TeamCity, Bamboo yine bilinen araçlardan. Bununla birlikte bulut tabanlı servislerin de kendi çözümleri bulunmaktadır. Azure DevOps, AWS CodePipeline de bunlara örnek çözümlerdir. 
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Özetle her bir çözümün kendine göre avantaj ve dezavantajları tabii ki vardır. Buradaki çözüm ekibiniz yetkinliklerine ve projenin isterlerine göre kendinize en uygun olanı aracı seçmeniz gerekmektedir.
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Bölümü birer ayet-i kerime ve hadis-i şerif ile bitirelim.
+
+> "İş konusunda onlarla istişare et. Kararını verdiğin zaman ise artık Allah’a tevekkül et. Şüphesiz Allah, tevekkül edenleri sever." (Âl-i İmrân Suresi, 3:159)
+
+> "İşlerin en hayırlısı, az da olsa devamlı olanıdır." (Buhârî, Rikak 18; Müslim, Müsâfirîn 217)
