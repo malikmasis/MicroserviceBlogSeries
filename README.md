@@ -44,7 +44,7 @@ Mikroservis konusu ile ilgili kendi adıma diyebileceğim en net şey, gerçekte
 
 13. **[Deployment Automation](#13-deployment-automation)**: Bu işe girişmeyi düşünüyorsanız manuel deployment'i hayatınızdan çıkarmış olmanız gerekiyor. Servisleriniz her birinin otomatik olarak sunuculara gitmesi gerekmektedir. Hatta gün içinde istediğiniz anda bu işi de yapabiliyor olmalısınız.
 
-14. **Configuration Management**: Dev test prod gibi farklı ortamlarınızın olması gerekir. Bu aslında monolit yapılarda da olan bir konu ancak bazen gün içinde birden fazla deployment hedeflenen sistemlerde olmazsa olmaz durumuna dönüşüyor.
+14. **[Configuration Management](#14-configuration-management)**: Dev test prod gibi farklı ortamlarınızın olması gerekir. Bu aslında monolit yapılarda da olan bir konu ancak bazen gün içinde birden fazla deployment hedeflenen sistemlerde olmazsa olmaz durumuna dönüşüyor.
 
 15. **Service Registry & Discovery**: Servislerin birbiriyle iletişim kurduğu durumları ele alır. Özellikle dinamik olarak ölçeklenme, dağıtılma gibi konularda daha da önemi artmaktadır. Yine birçok konudaki gibi bunu da yapan bazı araçlar mevcut.
 
@@ -447,3 +447,27 @@ Content-based Routing: İsteğin türüne göre yönlendirme yapılır. Web veya
 > "İş konusunda onlarla istişare et. Kararını verdiğin zaman ise artık Allah’a tevekkül et. Şüphesiz Allah, tevekkül edenleri sever." (Âl-i İmrân Suresi, 3:159)
 
 > "İşlerin en hayırlısı, az da olsa devamlı olanıdır." (Buhârî, Rikak 18; Müslim, Müsâfirîn 217)
+
+### 14. Configuration Management
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Serinin on dördüncü bölümünde mikroservis sistemlerin ayar yönetimi kısmına odaklanıyor olacağız. Sistemlerin dayanıklı, ölçeklenebilir ve bağımsız olarak dağıtılabilmesi için gerekli ayarların nasıl tutulması gerektiği konusuna değineceğiz. Bunun için ne gibi yöntemler mevcut, kullanılan araçlar nelerdir gibi bazı sorulara da cevap arayacağız. Hazırsak başlayalım.
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Diğer yazılarımızda olduğu gibi öncelikle monolit sistemlere bakalım. Uygulamaların farklı ortamlarda doğru bir şekilde ayağa kalkması her proje için kritik bir nokta ve bunun böyle olmadığı projelere sanırım denk gelmiyoruz artık. Daha önce de değindiğimiz gibi monolit sistemlerde meydana gelen tek hata sistemin tek başına çökmesine sebep olabilir. Bu yüzden belki de bazı ayarlar ve konular monolit sistemde çok daha önemli ve kritik olabiliyor. Ortamların tutarlı olması, dağıtım konularındaki risklerin azalması gibi faydalar sağlar.
+    
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Araya girip bir anımı paylaşmak istiyorum. Üzerinde çalıştığımız mikroservis projesini canlıya çıkmak zorundaydık ve uygulamayı başka bir şirketten teslim almamız da gerektiği için bulut üzerinde sadece prod ortamımız vardı. Bu süreç yaklaşık 15 gün sürdü, ancak o dönemlerdeki stresi hatırladıkça karnım ağrıyor. Ekibin yaptığı bütün geliştirmeleri tek tek inceliyor, çok kontrollü bir şekilde canlıya çıkmamız gerekiyordu, ama sonuç olarak kod maalesef canlı ortamda test ediliyordu. Hem bizim geliştirme hızımızı düşürüyor, hem test ekibi tarafından test edilmeyen kodun canlıya gitmesine sebep oluyor hem de bize ağır sorumluluk biniyordu. Bu konunun varlığının nasıl bir nimet olduğunu tekrar hatırlamış olduk. Acı bir gülümsetti yine :)
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Şimdi de mikroservis tarafına geçecek olursak, sistemde birçok servis olacağından en kolay işler bile zorlaşıyor diyebiliriz. O yüzden bu tarz ihtiyaç durumlarında ilk akla gelen şey bunların nasıl merkezileştirilmesi. Merkezileştirme dediğimizde de kendi çözümlerimizle birlikte bu konuda ortaya çıkan birçok araç vitrinlerdeki yerini almış oluyor.
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Bulut tabanlı sistemler kullanıyorsanız her birinin kendine ait çözümleri var. Genelde "secret manager" olarak geçmektedir. Ayrıca Github'un kendi çözümü de mevcut. Proje veya kuruluş nezdinde bu değerleri verebiliyoruz. Ayrıca Vault ve Consul gibi bağımsız araçlar ile de bu hassas verileri yönetebilirsiniz. Özellikle prod ortamları için hiçbir hassas veriyi konfigürasyon dosyalarında tutmuyoruz, pipeline aracılığıyla bunları eziyoruz. Projenin hiçbir yerinde bu veriler tutulmamış oluyor.
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Dev, test, preprod ve prod ortamlarının olması monolit sistemlerde olduğu gibi mikroservis yapıda da kritik bir nokta. Farklı olarak bunu her projede yönetebildiğimiz gibi merkezi olarak da yönetebiliriz. Her iki yöntemin de kendine göre avantaj ve dezavantajları var. Global bilgileri merkezi olarak tutup, yerel verileri proje bazlı tutuyoruz. İhtiyaçlarınıza göre birini seçebilir veya hibrit çözüm geliştirebilirsiniz.
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Konfigürasyon dosyalarında tutulan bilgiler değiştirildiğinde bunların projede algılanması için servislerin yeniden çalıştırılması gerekmektedir. Özellikle bulut sistemler geçişlerde kesintiyi minimize etse de bu bazen istenilen bir durum olmaktan çıkıyor. O yüzden "hot reload" dediğimiz bir yapı ile servisler yeniden başlatılmadan ayarların algılanıp değişikliğin yansıtılması da istenebilir. Bahsettiğimiz araçların bazıları buna yapabilmektedir. Direkt bu konuyla alakalı değil ancak YARP (reverse proxy) hot reload çalışarak konfigürasyonda yapılan değişikliğin servisleri yeniden başlatılmaya ihtiyaç duymadan algılar ve bunu hayata alır.
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Özetle konfigürasyonların tutulması ve kullanılmasının farklı yöntemleri olsa da mikroservislerde bunları merkezileştirmenin önemi üzerinde durmaya çalıştık. Ayrıca farklı ortamlarda yapılan geliştirmelerin de süreçleri nasıl daha dayanıklı kıldığını görmüş olduk.
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Bölümü birer ayet-i kerime ve hadis-i şerif ile bitirelim.
+
+> "İyi amelleri en güzel şekilde yapın." (Müminun, 23:51)
+
+> "Bir grup insan, lider olmadan bir araya gelirse, şeytan onlara hükmeder." (İbn Mace, Hadis No: 3942)
