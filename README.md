@@ -46,7 +46,7 @@ Mikroservis konusu ile ilgili kendi adıma diyebileceğim en net şey, gerçekte
 
 14. **[Configuration Management](#14-configuration-management)**: Dev test prod gibi farklı ortamlarınızın olması gerekir. Bu aslında monolit yapılarda da olan bir konu ancak bazen gün içinde birden fazla deployment hedeflenen sistemlerde olmazsa olmaz durumuna dönüşüyor.
 
-15. **Service Registry & Discovery**: Servislerin birbiriyle iletişim kurduğu durumları ele alır. Özellikle dinamik olarak ölçeklenme, dağıtılma gibi konularda daha da önemi artmaktadır. Yine birçok konudaki gibi bunu da yapan bazı araçlar mevcut.
+15. **[Service Registry & Discovery](#15-service-registry--discovery)**: Servislerin birbiriyle iletişim kurduğu durumları ele alır. Özellikle dinamik olarak ölçeklenme, dağıtılma gibi konularda daha da önemi artmaktadır. Yine birçok konudaki gibi bunu da yapan bazı araçlar mevcut.
 
 16. **Monitoring**: Birden fazla servisiniz varsa bunları yönetmek de doğal olarak zorlaşabiliyor. Bunlardan herhangi birinde bir problem olduğunda kullanıcıdan önce sizin haberiniz olmalı. Hem durumları takip edebileceğimiz hem de bize alarm durumlarını önceden haber etmeye olanak sağlar.
 
@@ -471,3 +471,30 @@ Content-based Routing: İsteğin türüne göre yönlendirme yapılır. Web veya
 > "İyi amelleri en güzel şekilde yapın." (Müminun, 23:51)
 
 > "Bir grup insan, lider olmadan bir araya gelirse, şeytan onlara hükmeder." (İbn Mace, Hadis No: 3942)
+
+### 15. Service Registry & Discovery
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Serinin on beşinci bölümünde servislerin birbiriyle iletişim kurarken dinamik bir şekilde bunu yapmanın yoluna değineceğiz. Monolit sistemlerde böyle bir ihtiyaç genel itibariyle bulunmazken, mikroservis sistemlerde servislerin çokluğu nedeniyle önümüze çıkmaktadır. Hazırsak başlayalım.
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Öncelikle registry ve discovery kavramlarını ele alalım. Registry, kayıt olma anlamına gelir. Bununla birlikte olarak da servislerin sisteme kaydedilme kısmını ele alıyor. Discovery ise keşfetme anlamına gelir. Kaydedilmiş bilgileri dinamik olarak istenilen servise döner.
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Bu işlemleri neden dinamik olarak yapma ihtiyacı ortaya çıkıyor dediğimiz noktada,
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Kalabalık servis yapısında IP değişse dahi var olan adresler doğru bir şekilde gelmelidir. (Bunu "magic string" konusuna benzetiyorum. Her yerde string ifadeyi kullanmak yerine belki onu bir sabit (const) değişkene atayıp birçok yerden kullanmak ve gerektiğinde sadece bir yerden değişmesi yeterli olur. Mikroservis sistemlerde merkezileştirmek çok önemli bir nokta).
+Gelen yükü birden fazla instance sahibi olan servislerde uygun olana yönlendirir (Bunun da farklı şekilleri vardır. Meraklısı şu yazımıza göz atabilir).
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Bağımsızlık ve esneklik yine mikroservis sisteminin temel konularından ve bu şekilde servisler arası bağımlılığı azaltmış oluruz.
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Bu işleri yapan bazı araçlar Consul, Eureka ve Zookeeper olarak karşımıza çıkmaktadır. Bu araçlar birçok dil için kullanılsa da  Eureka ve Zookeeper daha çok java ile anılıyor iken Consul daha çok dotnet dünyasında kendi adından bahsettiriyor.
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Bahsettiğimiz konular arasında açıkçasını söylemek gerekirse en az ihtiyaç duyacağımız konu olabilir. Buna rağmen bazı durumlarda adresleri değiştirmek istediğimizde ilgili projelerde tek tek değişiklikleri yaparak deploy işlemlerini yapmak ve bunu manuel olarak ilerletmenin zorluğunu yaşadık. Tabii biraz da attığın taşın ürküttüğün kuşa değer mi konusunu da göz önünde bulundurmanın faydalı olacağını düşünüyorum.
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Belki kabaca bir tabir ile gelen servislerin kaydedilmesi (post) ve daha sonra ihtiyaç halinde bu verilerin çekilmesi (get) olarak ele alabiliriz. Tabii bununla birlikte yukarıda da bahsettiğimiz farklı kolaylıklar da sağlıyor, ancak genel mantığı anlayabilmek açısından bunu da söylemek istedim.
+    
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Özetle servislerin dinamik bir şekilde kaydedilip ihtiyaç halinde bunların istendiğinde dinamik ve merkezi yapılar kurmak projelerdeki esnekliği ve tek elden yönetimi sağlayarak elimizi oldukça güçlendiriyor.
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Bölümü birer ayet-i kerim ve hadis-i şerif ile bitirelim.
+
+> "Her şeyin hazineleri yalnızca bizim yanımızdadır. Biz, onu ancak belli bir ölçüye göre indiririz." (Hicr Suresi, 21)
+
+> "Allah, işinde maharet sahibi olan kulunu sever." (Beyhakî, Şuabü’l-İman, 4/334)
