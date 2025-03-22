@@ -48,7 +48,7 @@ Mikroservis konusu ile ilgili kendi adıma diyebileceğim en net şey, gerçekte
 
 15. **[Service Registry & Discovery](#15-service-registry--discovery)**: Servislerin birbiriyle iletişim kurduğu durumları ele alır. Özellikle dinamik olarak ölçeklenme, dağıtılma gibi konularda daha da önemi artmaktadır. Yine birçok konudaki gibi bunu da yapan bazı araçlar mevcut.
 
-16. **Monitoring**: Birden fazla servisiniz varsa bunları yönetmek de doğal olarak zorlaşabiliyor. Bunlardan herhangi birinde bir problem olduğunda kullanıcıdan önce sizin haberiniz olmalı. Hem durumları takip edebileceğimiz hem de bize alarm durumlarını önceden haber etmeye olanak sağlar.
+16. **[Monitoring](#16-monitoring)**: Birden fazla servisiniz varsa bunları yönetmek de doğal olarak zorlaşabiliyor. Bunlardan herhangi birinde bir problem olduğunda kullanıcıdan önce sizin haberiniz olmalı. Hem durumları takip edebileceğimiz hem de bize alarm durumlarını önceden haber etmeye olanak sağlar.
 
 ---
 
@@ -498,3 +498,37 @@ Gelen yükü birden fazla instance sahibi olan servislerde uygun olana yönlendi
 > "Her şeyin hazineleri yalnızca bizim yanımızdadır. Biz, onu ancak belli bir ölçüye göre indiririz." (Hicr Suresi, 21)
 
 > "Allah, işinde maharet sahibi olan kulunu sever." (Beyhakî, Şuabü’l-İman, 4/334)
+
+### 16. Monitoring
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Mikroservis serimizin son bölümü olan on altıncı yazımıza geldik. Bugünkü konumuz monitoring. Bir problem ile karşılaştığımızda, hatta bazen karşılaşmadan bizi yönlendirecek/uyaracak sistemlerin olması çok önemlidir. Canlı çalışan sistemlerin 7/24 ayakta olması gereken durumlarda bu konu daha da öne çıkmakta ve uykusuz gecelerin sayısını oldukça azaltmaktadır diye düşünüyorum :) Hazırsak başlayalım.
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Monitoring her sistemde önemli olacak bir konudur. Sistemin sağlıklı bir şekilde ayakta olması en temel konu olsa gerek. Monolit sistemlerde bunu tespit etmek elbette çok daha kolaydır. Tek bir proje, muhtemelen tek bir veritabanı vardır. Bunun da tabii ki bazı metriklerinin takip edilmesi gerekiyor olsa da buradaki parametreler daha az olduğundan takibi de doğal olarak daha kolaydır.
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Mikroservis sistemlerde onlarca yüzlerce servis ve birçoğunun da kendine has veri tabanları var. Bununla birlikte kuyruk yapıları, cache'leme ve daha birçok araç ve bunların birden çok instance'leri gibi konuları ekleyince konu tahmin ettiğimizden çok daha karmaşık hale gelebiliyor. Doğal olarak bunların takip edilmesi de bir o kadar zor oluyor. Bu yüzden bu işi, birçok yazıda bahsettiğimiz üzere,  merkezileştirme ve otomatize etme üzerine adımlar atmalıyız.
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Monitoring'in neden gerekli olduğunu anlatmaya çalıştık. Biraz da öneminden bahsedelim.
+- Sistemin her daim ayakta olup olmadığını bilmemizi sağlar.
+- Hata tespiti ve çözümü konusunda bize yarar sağlar.
+- Tüm sistemi tek bir elden yönetilmesini sağlar.
+- Gecikme, dar boğaz gibi konuların tespitini sağlar.
+- Olası problemleri görüp önceden çözümler üretilmesini sağlar.
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Monitoring ile birden çok metrik takip edilebilir. Bunlardan bazıları; istek süreleri, hata oranları, CPU ve bellek kullanımı, trafik yoğunluğu, gecikmeler, hata loglarıdır. Bunlar temel metrik olsa da her sistemin kendine göre ihtiyaçları oluyor. Sizin sistemler için gerekli metrikleri de listeye eklemeniz faydalı olacaktır.
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Neredeyse her merkezi yapıda olduğu gibi burada da birbirinden değerli araçlar var. Bunlardan en çok duyulanlardan bazıları; Prometheus + Grafana ikilisi, ELK (önceki yazımızda konuşmuştuk), OpenTelemetry (Jeager + Zipkin), New Relic ve bulut tabanlı sistemlerin kendi araçları bunlara örnek olarak verilebilir. Her birinin kendine göre kullanım alanı ve avantajları var. Biz şu an New Relic (ücretli versiyon) kullanıyoruz, servisler arası çağrılarda servislerin nereden geçtiği, nerelerde tıkandığı bilgisi bizim için çok önemli. Özellikle de legacy olan bazı sistemlerimiz için tespiti açısından bize çok faydası dokunuyor. Bununla birlikte OpenTelemetry kullandığımız yerler de mevcut.
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Tüm bu metrikler belirli araçlarla toplanır dedik, ancak bunları anlamlı/kullanılabilir hale getirmek de lazım. Bunun için de alarmlar kuruyoruz. Örneğin son 1 saat içerisinde 1000'den fazla OTP sms atıldıysa burada bir atak yiyor olabiliriz veya kuyrukta 500'den fazla bekleyen IoT komutu varsa orada bir sorun var gibi alarmlar kurulabilir. Bu alarmları yine belirli yöntemlerle yollayabiliriz. Slack, SMS, e-posta bu seçeneklerden bazılarıdır.
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Bazen yanıltıcı uyarılar da oluşabiliyor. Burada metrikleri de zamanla optimize etmekte fayda var. Ya da beklemediğiniz bir ortamda yüzlerce ya da binlerce aynı hata geldiğinde onu sessize alıp problemi çözdükten sonra açmak da uygulanabilir yöntemlerden. 
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Tüm bu metrikler, alarm kurmak gayet güzel. Ancak belirli dönemlerde farklı ekiplerin görmek istedikleri metrikleri görsel veriye çevirmek de gerekiyor. Örneğin yazılım ekibinin takip ettiği farklı ekranlar var iken, devops ekibi başka metrikleri takip ediyor olabilir. Bu yüzden işleri kolaylaştırmak için farklı dokunuşlar yapmak gerekir. Bizler de özelleştirdiğimiz metriklerle tüm ekibin görüntüleyebileceği arayüzler oluşturduk. Bunları zaman zaman kendimiz de kontrol ediyoruz.
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Özetle metrik toplama, bunları anlamlandırıp alarmlar kurma ve daha sonra da görüntüleyebileceğimiz arayüzler kullanmak olursa daha iyi olur diyebileceğimiz işler olmaktan çıkıp çoktan zorunluluk haline gelmiştir.
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Hem yazımızın hem de yazı serimizin sonuna gelmiş bulunmaktayız. Bu işe başladığımda gözümde büyüyen acaba yapabilir miyim, bitirebilir miyim dediğim ve uzun süredir bekleyen bu notlarımı bu şekilde ele alabildiğim için Yüce Allah'a şükürler, siz okuyan değerli arkadaşlara ise teşekkürlerimi borç bilirim. 
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Bölümü ve seriyi birer ayet-i kerim ve hadis-i şerif ile bitirelim.
+
+> "İnsan ancak çalıştığının karşılığını görür." (Necm Suresi, 53:39)
+
+> "Emanet zayi edildiğinde kıyameti bekle." Sahabe sordu: 'Emanet nasıl zayi olur?' Peygamberimiz (sav) buyurdu: 'İş, ehline verilmediğinde kıyameti bekle.'" (Buhari, İlim 2)
